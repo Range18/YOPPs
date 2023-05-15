@@ -4,7 +4,9 @@ import {IUser} from "./IUser";
 export interface IUserPage {
     userData: IUser;
     description: string;
+    contactEmail: string;
     socialLinks: ILinks;
+    avatarImg: string;
 }
 
 

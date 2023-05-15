@@ -16,7 +16,7 @@ class AuthController {
             const maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
             res.cookie('refreshToken', userData.refreshToken, {maxAge: maxAgeRefreshToken, httpOnly: true})
 
-            return res.json({userData, message: "User registration success"});
+            return res.status(201).json({userData, message: "User registration success"});
         } catch (err) {
             next(err)
         }
@@ -30,7 +30,7 @@ class AuthController {
             const maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
             res.cookie('refreshToken', userData.refreshToken, {maxAge: maxAgeRefreshToken, httpOnly: true})
 
-            return res.json({userData, message: "User login success"});
+            return res.status(201).json({userData, message: "User login success"});
         } catch (err) {
             next(err)
         }

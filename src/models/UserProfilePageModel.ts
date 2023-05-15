@@ -6,7 +6,9 @@ import {UserModel} from "./userModel";
 export class UserProfilePageModel extends Model {
     declare userUUID: string;
     declare description: string;
+    declare contactEmail: string;
     declare socialLinks: string;
+    declare avatarImage: string;
 }
 
 UserProfilePageModel.init({
@@ -18,9 +20,17 @@ UserProfilePageModel.init({
         type: DataTypes.TEXT,
         allowNull: true
     },
+    contactEmail:{
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     socialLinks:{
         type: DataTypes.STRING,
         allowNull: true
+    },
+    avatarImage:{
+        type: DataTypes.TEXT('medium'),
+        allowNull:true,
     }
 }, {
     tableName: 'userPages',

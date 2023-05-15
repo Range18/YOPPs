@@ -5,7 +5,5 @@ export interface IUser{
     name?: string;
     surname?: string;
     age?: string;
-    email: string;
-    isActivated: boolean;
 }
 
