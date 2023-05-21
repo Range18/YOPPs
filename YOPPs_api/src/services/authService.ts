@@ -8,12 +8,13 @@ import MailService from "./mailService";
 import TokenService from "./tokenService";
 import {UserProfilePageModel} from "../models/UserProfilePageModel";
 import {IUserDto} from "../Dto/IUserDto";
+import {AuthExceptions} from "../Errors/HttpExceptionsMessages";
 
 class AuthService {
     async registration(username: string, email: string, password: string) {
         const candidate: UserModel | null = await UserModel.findOne({where: {email}})
         if (candidate) {
-            throw ApiError.BadRequest(`That user with ${email} is already exits`)
+            throw ApiError.BadRequest(AuthExceptions.UserAlreadyExists)
         }
 
         const hashPassword = bcrypt.hashSync(password, bcryptSalt);
@@ -28,10 +29,9 @@ class AuthService {
             username: user.username,
             isActivated: user.isActivated
         }
-        console.log(userDto)
         const activationLink: string = TokenService.generateActivationToken(userDto)
 
-        await MailService.sendActivationMail(email, `${apiServer.url}/api/auth/activate/${activationLink}`)
+        MailService.sendActivationMail(email, `${apiServer.url}/api/auth/activate/${activationLink}`)
 
         const tokens = TokenService.generateTokens(userDto)
         await TokenService.saveRefreshToken(userDto.UUID, tokens.refreshToken)
@@ -42,12 +42,12 @@ class AuthService {
     async activate(token: string) {
         const tokenData = TokenService.validateToken(token)
         if (!tokenData) {
-            throw ApiError.BadRequest('Invalid activation token')
+            throw ApiError.BadRequest(AuthExceptions.InvalidToken)
         }
         const UUID = tokenData.UUID
         const user = await UserModel.findOne({where: {UUID}})
         if (!user) {
-            throw ApiError.BadRequest('Invalid activation URL')
+            throw ApiError.BadRequest(AuthExceptions.InvalidActivationURL)
         }
         user.isActivated = true
         await user.save()
@@ -56,11 +56,11 @@ class AuthService {
     async login(email: string, password: string) {
         const user = await UserModel.findOne({where: {email}})
         if (!user) {
-            throw ApiError.BadRequest(`User ${email} not found`)
+            throw ApiError.BadRequest(AuthExceptions.UserNotFound)
         }
         const isPassEquals = await bcrypt.compare(password, user.password)
         if (!isPassEquals) {
-            throw ApiError.BadRequest(`Invalid password`)
+            throw ApiError.BadRequest(AuthExceptions.WrongPassword)
         }
         const userDto: IUserDto = {
             UUID: user.dataValues.UUID,
@@ -75,12 +75,12 @@ class AuthService {
 
     async refresh(refreshToken: string) {
         if (!refreshToken) {
-            throw ApiError.UnauthorizedError()
+            throw ApiError.UnauthorizedError(AuthExceptions.InvalidToken)
         }
         const userData = TokenService.validateToken(refreshToken)
         const tokenFromDB = await TokenService.findToken(refreshToken)
         if (!userData || !tokenFromDB) {
-            throw ApiError.UnauthorizedError()
+            throw ApiError.UnauthorizedError(AuthExceptions.InvalidToken)
         }
         const user = await UserModel.findOne({where: {UUID: userData.UUID}})
         const userDto: IUserDto = {

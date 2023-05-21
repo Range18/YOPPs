@@ -51,7 +51,7 @@ export const force: boolean = false
 export const clientServer: IClientServer = {
     port: parseInt(process.env.CLIENT_PORT as string),
     host: process.env.CLIENT_HOST as string,
-    url: `http://localhost:5000`
+    url: `http://localhost:3000`
 }
 
 export const database: IDatabase = {

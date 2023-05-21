@@ -1,6 +1,8 @@
 .idea
-/.env
-/build
+YOPPs_api/.env
+
+#production
+/YOPPs_api/build/
 
 #depencies
-/node_modules/
+/YOPPs_api/node_modules/

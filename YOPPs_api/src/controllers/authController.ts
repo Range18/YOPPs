@@ -1,15 +1,12 @@
 import AuthService from "../services/authService";
 import {clientServer, jwtSettings} from "../../config";
+import {NextFunction, Request, Response} from "express";
 
 
 class AuthController {
 
-    async registration(req: any, res: any, next: any) {
+    async registration(req: Request, res: Response, next: NextFunction) {
         try {
-            // const errors = validationResult(req);
-            // if (!errors.isEmpty()) {
-            //     return next(ApiError.BadRequest('Registration Error', errors.array()))
-            // }
             const {username, email, password} = req.body;
             const userData = await AuthService.registration(username, email, password)
 
@@ -22,7 +19,7 @@ class AuthController {
         }
     }
 
-    async login(req: any, res: any, next: any) {
+    async login(req: Request, res: Response, next: NextFunction) {
         try {
             const {email, password} = req.body;
             const userData = await AuthService.login(email, password)
@@ -36,7 +33,7 @@ class AuthController {
         }
     }
 
-    async logout(req: any, res: any, next: any) {
+    async logout(req: Request, res: Response, next: NextFunction) {
         try {
             const {refreshToken} = req.cookies
             const token = await AuthService.logout(refreshToken)
@@ -47,7 +44,7 @@ class AuthController {
         }
     }
 
-    async refresh(req: any, res: any, next: any) {
+    async refresh(req: Request, res: Response, next: NextFunction) {
         try {
             const {refreshToken} = req.cookies
             const userData = await AuthService.refresh(refreshToken)
@@ -61,7 +58,7 @@ class AuthController {
         }
     }
 
-    async activate(req: any, res: any, next: any) {
+    async activate(req: Request, res: Response, next: NextFunction) {
         try {
             const token = req.params.link
             await AuthService.activate(token)

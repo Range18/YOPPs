@@ -4,7 +4,7 @@ const authRoute: IRouter = Router()
 
 authRoute.post('/registration', AuthController.registration)
 authRoute.post('/login', AuthController.login)
-authRoute.get('/activate/:link',AuthController.activate)
+authRoute.post('/activate/:link',AuthController.activate)
 authRoute.post('/refresh', AuthController.refresh)
 authRoute.delete('/logout', AuthController.logout)
 
