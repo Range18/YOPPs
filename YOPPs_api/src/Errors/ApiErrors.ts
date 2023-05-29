@@ -1,26 +1,20 @@
+import {AuthExceptions} from "./HttpExceptionsMessages";
+
 export class ApiError extends Error {
-    readonly status: number;
-    readonly errors: any[];
+    status: number;
+    errors: any[];
 
-    getStatus(): number {
-        return this.status;
-    }
-
-    getErrors(): any[] {
-        return this.errors;
-    }
-
-    constructor(status: number, message: string, errors = []) {
+    constructor(status: number , message: string, errors = []) {
         super(message)
         this.status = status
         this.errors = errors
     }
 
-    static UnauthorizedError(message: string = 'User is unauthorized') {
+    static UnauthorizedError(message: string = AuthExceptions.UserIsUnauthorized) {
         return new ApiError(401, message)
     }
 
-    static BadRequest(message: string, errors = []) {
+    static BadRequest( message: string, errors = []) {
         return new ApiError(400, message, errors)
     }
 

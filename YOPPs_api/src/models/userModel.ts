@@ -1,5 +1,5 @@
 import {CreateOptions, DataTypes, Model, UUID} from "sequelize";
-import {sequelize} from "../dbController/dbConnect";
+import {dbContext} from "../dbController/dbConnect";
 import {UserProfilePageModel} from "./UserProfilePageModel";
 import {Token} from "./Token-model";
 import {HookReturn} from "sequelize/types/hooks";
@@ -63,13 +63,12 @@ UserModel.init({
     tableName: 'users',
     createdAt: true,
     updatedAt: true,
-    sequelize,
+    sequelize: dbContext,
 })
 
 UserModel.hasOne(UserProfilePageModel, {
     foreignKey: 'userUUID',
 })
-
 UserProfilePageModel.belongsTo(UserModel, {
     foreignKey: 'userUUID',
 })

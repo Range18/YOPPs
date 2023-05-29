@@ -3,28 +3,32 @@ import {jwtSettings} from "../../config";
 import {Token} from "../models/Token-model";
 import {IUserDto} from "../Dto/IUserDto";
 
-
 class TokenService {
-    generateTokens(payload: IUserDto ) {
+    static generateTokens(payload: IUserDto) {
         const refreshToken = jwt.sign(payload, jwtSettings.secret, {expiresIn: jwtSettings.authExpires.refresh})
         const accessToken = jwt.sign(payload, jwtSettings.secret, {expiresIn: jwtSettings.authExpires.access})
 
         return {refreshToken, accessToken}
     }
 
-    generateActivationToken(payload: IUserDto) {
-        const token = jwt.sign(payload, jwtSettings.secret, {expiresIn: jwtSettings.authExpires.activation})
+    static generateActivationToken(payload: IUserDto): string {
+        const token = jwt.sign(payload, jwtSettings.secret)
         return token
     }
 
-    async saveRefreshToken(UUID: string, refreshToken: string) {
+    static async saveRefreshToken(UUID: string, refreshUUID: string): Promise<Token | null> {
         try {
             const tokenData: Token | null = await Token.findOne({where: {UUID}})
             if (tokenData) {
-                tokenData.token = refreshToken
+                tokenData.UUID = refreshUUID
                 return tokenData.save()
             }
-            const token = await Token.create({UUID, token: refreshToken})
+            const maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
+            const token = await Token.create({
+                userUUID: UUID,
+                UUID: refreshUUID,
+                expireIn: Date.now() + maxAgeRefreshToken
+            })
             return token
         } catch (err) {
             console.log(err)
@@ -32,10 +36,10 @@ class TokenService {
         }
     }
 
-    async removeToken(token: string) {
+    static async removeToken(token: string): Promise<Token | null> {
         try {
-            //TODO There is an Error with undefined
-            const tokenData = await Token.findOne({where: {token}})
+            const tokenPayload = this.validateToken(token)
+            const tokenData = await Token.findOne({where: {UUID: tokenPayload?.refreshUUID}})
             if (!tokenData) {
                 return null;
             }
@@ -47,9 +51,9 @@ class TokenService {
         }
     }
 
-    async findToken( token: string) {
+    static async findToken(UUID: string | undefined): Promise<Token | null> {
         try {
-            const tokenData = await Token.findOne({where: {token}})
+            const tokenData: Token | null = await Token.findOne({where: {UUID}})
             return tokenData;
         } catch (err) {
             console.log(err)
@@ -58,9 +62,9 @@ class TokenService {
     }
 
 
-    validateToken(token: string){
+    static validateToken(token: string): IUserDto | null {
         try {
-            const userData: string | JwtPayload = jwt.verify(token, jwtSettings.secret)
+            const userData: string | IUserDto | JwtPayload = jwt.verify(token, jwtSettings.secret)
             return userData as IUserDto;
         } catch (err) {
             console.log(err)
@@ -69,4 +73,4 @@ class TokenService {
     }
 }
 
-export default new TokenService();
+export default TokenService;

@@ -8,7 +8,6 @@ export interface IAuthResponse{
 }
 
 interface IUserData {
-    refreshToken: string,
     accessToken: string,
 
     user: IUser

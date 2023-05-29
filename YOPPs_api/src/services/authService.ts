@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import {v4 as uuidv4} from 'uuid';
 
 import {UserModel} from "../models/userModel";
 import {ApiError} from "../Errors/ApiErrors";
@@ -8,10 +9,13 @@ import MailService from "./mailService";
 import TokenService from "./tokenService";
 import {UserProfilePageModel} from "../models/UserProfilePageModel";
 import {IUserDto} from "../Dto/IUserDto";
-import {AuthExceptions} from "../Errors/HttpExceptionsMessages";
+import {AuthExceptions, TokenExceptions} from "../Errors/HttpExceptionsMessages";
+import {IUserData} from "../entities/IUserData";
+import {Token} from "../models/Token-model";
 
+//TODO rewrite
 class AuthService {
-    async registration(username: string, email: string, password: string) {
+    static async registration(username: string, email: string, password: string): Promise<IUserData> {
         const candidate: UserModel | null = await UserModel.findOne({where: {email}})
         if (candidate) {
             throw ApiError.BadRequest(AuthExceptions.UserAlreadyExists)
@@ -23,10 +27,13 @@ class AuthService {
             email,
             password: hashPassword,
         })
-        await UserProfilePageModel.create({userUUID: user.UUID})
+
+        UserProfilePageModel.create({userUUID: user.UUID})
+
         const userDto: IUserDto = {
             UUID: user.UUID,
             username: user.username,
+            refreshUUID: uuidv4(),
             isActivated: user.isActivated
         }
         const activationLink: string = TokenService.generateActivationToken(userDto)
@@ -34,26 +41,26 @@ class AuthService {
         MailService.sendActivationMail(email, `${apiServer.url}/api/auth/activate/${activationLink}`)
 
         const tokens = TokenService.generateTokens(userDto)
-        await TokenService.saveRefreshToken(userDto.UUID, tokens.refreshToken)
+        await TokenService.saveRefreshToken(userDto.UUID, userDto.refreshUUID)
 
         return {...tokens, user: userDto}
     }
 
-    async activate(token: string) {
+    static async activate(token: string) {
         const tokenData = TokenService.validateToken(token)
         if (!tokenData) {
-            throw ApiError.BadRequest(AuthExceptions.InvalidToken)
+            throw ApiError.BadRequest(TokenExceptions.InvalidActivationURL)
         }
         const UUID = tokenData.UUID
         const user = await UserModel.findOne({where: {UUID}})
         if (!user) {
-            throw ApiError.BadRequest(AuthExceptions.InvalidActivationURL)
+            throw ApiError.BadRequest(TokenExceptions.InvalidActivationURL)
         }
         user.isActivated = true
         await user.save()
     }
 
-    async login(email: string, password: string) {
+    static async login(email: string, password: string): Promise<IUserData> {
         const user = await UserModel.findOne({where: {email}})
         if (!user) {
             throw ApiError.BadRequest(AuthExceptions.UserNotFound)
@@ -65,40 +72,45 @@ class AuthService {
         const userDto: IUserDto = {
             UUID: user.dataValues.UUID,
             username: user.dataValues.username,
+            refreshUUID: uuidv4(),
             isActivated: user.dataValues.isActivated
         }
         const tokens = TokenService.generateTokens(userDto)
-        await TokenService.saveRefreshToken(userDto.UUID, tokens.refreshToken)
+        await TokenService.saveRefreshToken(userDto.UUID, userDto.refreshUUID)
 
         return {...tokens, user: userDto}
     }
 
-    async refresh(refreshToken: string) {
+    static async refresh(refreshToken: string): Promise<IUserData> {
         if (!refreshToken) {
-            throw ApiError.UnauthorizedError(AuthExceptions.InvalidToken)
+            throw ApiError.UnauthorizedError(TokenExceptions.InvalidToken)
         }
         const userData = TokenService.validateToken(refreshToken)
-        const tokenFromDB = await TokenService.findToken(refreshToken)
-        if (!userData || !tokenFromDB) {
-            throw ApiError.UnauthorizedError(AuthExceptions.InvalidToken)
+        if (!userData) {
+            throw ApiError.UnauthorizedError(TokenExceptions.InvalidToken)
+        }
+        const tokenFromDB = await TokenService.findToken(userData?.refreshUUID)
+        if (!tokenFromDB) {
+            throw ApiError.UnauthorizedError(TokenExceptions.InvalidToken)
         }
         const user = await UserModel.findOne({where: {UUID: userData.UUID}})
         const userDto: IUserDto = {
             UUID: user?.dataValues.UUID,
             username: user?.dataValues.username,
+            refreshUUID: uuidv4(),
             isActivated: user?.dataValues.isActivated
         }
         const tokens = TokenService.generateTokens({...userDto})
-        await TokenService.saveRefreshToken(userDto.UUID, tokens.refreshToken)
+        await TokenService.saveRefreshToken(userDto.UUID, userDto.refreshUUID)
 
         return {...tokens, user: userDto}
     }
 
-    async logout(refreshToken: string) {
+    static async logout(refreshToken: string): Promise<Token | null> {
         const token = await TokenService.removeToken(refreshToken)
         return token;
     }
 }
 
 
-export default new AuthService();
+export default AuthService;

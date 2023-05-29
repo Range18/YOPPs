@@ -1,19 +1,23 @@
 import AuthService from "../services/authService";
 import {clientServer, jwtSettings} from "../../config";
 import {NextFunction, Request, Response} from "express";
-
+import {PartialUserData} from "../entities/PartialUserData";
 
 class AuthController {
+    private static maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
+
 
     async registration(req: Request, res: Response, next: NextFunction) {
         try {
             const {username, email, password} = req.body;
             const userData = await AuthService.registration(username, email, password)
 
-            const maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
-            res.cookie('refreshToken', userData.refreshToken, {maxAge: maxAgeRefreshToken, httpOnly: true})
-
-            return res.status(201).json({userData, message: "User registration success"});
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: AuthController.maxAgeRefreshToken, httpOnly: true})
+            const userDataPreview: PartialUserData = {
+                accessToken: userData.accessToken,
+                user: userData.user
+            }
+            return res.status(201).json({userDataPreview, message: "OK"});
         } catch (err) {
             next(err)
         }
@@ -24,10 +28,12 @@ class AuthController {
             const {email, password} = req.body;
             const userData = await AuthService.login(email, password)
 
-            const maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
-            res.cookie('refreshToken', userData.refreshToken, {maxAge: maxAgeRefreshToken, httpOnly: true})
-
-            return res.status(201).json({userData, message: "User login success"});
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: AuthController.maxAgeRefreshToken, httpOnly: true})
+            const userDataPreview: PartialUserData = {
+                accessToken: userData.accessToken,
+                user: userData.user
+            }
+            return res.status(201).json({userDataPreview, message: "OK"});
         } catch (err) {
             next(err)
         }
@@ -49,10 +55,12 @@ class AuthController {
             const {refreshToken} = req.cookies
             const userData = await AuthService.refresh(refreshToken)
 
-            const maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
-            res.cookie('refreshToken', userData.refreshToken, {maxAge: maxAgeRefreshToken, httpOnly: true})
-
-            return res.json({userData, message: "OK"});
+            res.cookie('refreshToken', userData.refreshToken, {maxAge: AuthController.maxAgeRefreshToken, httpOnly: true})
+            const userDataPreview: PartialUserData = {
+                accessToken: userData.accessToken,
+                user: userData.user
+            }
+            return res.json({userDataPreview, message: "OK"});
         } catch (err) {
             next(err)
         }

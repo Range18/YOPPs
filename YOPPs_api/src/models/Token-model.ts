@@ -1,23 +1,30 @@
 import {DataTypes, Model} from "sequelize";
-import {sequelize} from "../dbController/dbConnect";
-
+import {dbContext} from "../dbController/dbConnect";
 
 
 export class Token extends Model {
+    declare userUUID: string;
     declare UUID: string;
-    declare token: string;
+    declare expireIn: string;
 }
 
 Token.init({
-    UUID: {
-        type: DataTypes.STRING,
+    userUUID: {
+        type: DataTypes.UUID,
         allowNull: false,
     },
-    token: {
+    UUID: {
         type: DataTypes.TEXT,
         allowNull: false,
+    },
+    expireIn:{
+        type: DataTypes.DATE,
+        allowNull: false
     }
 }, {
     tableName: 'refreshTokens',
-    sequelize
+    createdAt: true,
+    updatedAt: false,
+    sequelize: dbContext
 })
+

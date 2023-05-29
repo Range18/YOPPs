@@ -1,5 +1,5 @@
 import {DataTypes, Model} from "sequelize";
-import {sequelize} from "../dbController/dbConnect";
+import {dbContext} from "../dbController/dbConnect";
 import {UserModel} from "./userModel";
 
 
@@ -34,7 +34,7 @@ UserProfilePageModel.init({
     }
 }, {
     tableName: 'userPages',
-    sequelize
+    sequelize: dbContext
 })
 
 

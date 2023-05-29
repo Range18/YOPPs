@@ -3,6 +3,9 @@ YOPPs_api/.env
 
 #production
 /YOPPs_api/build/
+/YOPPs_api/src/storage/
+
 
 #depencies
 /YOPPs_api/node_modules/
+

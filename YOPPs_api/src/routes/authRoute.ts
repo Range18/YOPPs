@@ -8,5 +8,4 @@ authRoute.post('/activate/:link',AuthController.activate)
 authRoute.post('/refresh', AuthController.refresh)
 authRoute.delete('/logout', AuthController.logout)
 
-
 export default authRoute;
