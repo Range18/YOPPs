@@ -1,6 +1,6 @@
 import {DataTypes, Model} from "sequelize";
 import {dbContext} from "../dbController/dbConnect";
-import {UserModel} from "./userModel";
+import { FileModel } from './File-model';
 
 
 export class UserProfilePageModel extends Model {
@@ -8,7 +8,7 @@ export class UserProfilePageModel extends Model {
     declare description: string;
     declare contactEmail: string;
     declare socialLinks: string;
-    declare avatarImage: string;
+    declare avatarId: number;
 }
 
 UserProfilePageModel.init({
@@ -28,16 +28,19 @@ UserProfilePageModel.init({
         type: DataTypes.STRING,
         allowNull: true
     },
-    avatarImage:{
-        type: DataTypes.TEXT('medium'),
-        allowNull:true,
+    avatarId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
+
 }, {
     tableName: 'userPages',
     sequelize: dbContext
 })
 
+UserProfilePageModel.hasMany(FileModel)
 
+FileModel.belongsTo(UserProfilePageModel)
 
 
 

@@ -6,7 +6,6 @@ export interface IUserPage {
     description: string;
     contactEmail: string;
     socialLinks: ILinks;
-    avatarImg: string;
 }
 
 

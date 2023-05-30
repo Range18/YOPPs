@@ -4,20 +4,16 @@ import {dbContext} from "../dbController/dbConnect";
 
 
 export class FileModel extends Model {
-    declare pageUUID: string;
-    declare originalName: string;
+    declare id: number;
+    declare userUUID: string;
     declare fileName: string;
     declare type: string;
     declare size: number;
 }
 
 FileModel.init({
-    pageUUID:{
+    userUUID:{
         type: DataTypes.UUID,
-        allowNull: false
-    },
-    originalName:{
-        type: DataTypes.STRING,
         allowNull: false
     },
     fileName: {

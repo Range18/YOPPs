@@ -15,5 +15,6 @@ export enum TokenExceptions {
 export enum UserPageExceptions {
     PageNotFound = 'Page not found',
     ImgNotFound = 'Image not found',
-    NoFile = "NoFile"
+    NoFile = 'No file was uploaded',
+    ExtensionNotAllowed = 'This file extension is not allowed '
 }

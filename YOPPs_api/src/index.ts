@@ -1,30 +1,22 @@
 import Express from "express"
 import cookieParser from "cookie-parser";
 import cors from 'cors';
+import multer from "multer";
 
-import {apiServer, clientServer, storagePath} from "../config";
+import {apiServer, clientServer} from "../config";
 import {connectDB} from "./dbController/dbConnect";
 import {syncDB} from "./dbController/syncDB";
 import authRoute from "./routes/authRoute";
 import {errorMiddleware} from "./middlewares/errorMiddleware";
 import userRouter from "./routes/userPageRoute";
-import multer from "multer";
-import {nanoid} from "nanoid";
+import StorageService from "./services/storageService";
 
-const storage = multer.diskStorage({
-    destination: (req, file, callback) => {
-        callback(null, storagePath)
-    },
-    filename: (req, file, callback) => {
-        callback(null, nanoid())
-    }
-})
 
 export const app = Express()
 
 app.use(Express.json())
 app.use(Express.urlencoded({extended: true}))
-app.use(multer({storage: storage}).single('file'))
+app.use(multer({storage: StorageService.storageConfig, fileFilter: StorageService.fileFilter}).single('file'))
 
 
 app.use(cors({

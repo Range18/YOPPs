@@ -13,7 +13,7 @@ import {AuthExceptions, TokenExceptions} from "../Errors/HttpExceptionsMessages"
 import {IUserData} from "../entities/IUserData";
 import {Token} from "../models/Token-model";
 
-//TODO rewrite
+
 class AuthService {
     static async registration(username: string, email: string, password: string): Promise<IUserData> {
         const candidate: UserModel | null = await UserModel.findOne({where: {email}})

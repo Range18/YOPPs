@@ -1,9 +1,8 @@
-import {UserModel} from "../models/userModel";
-import {ApiError} from "../Errors/ApiErrors";
-import {UserProfilePageModel} from "../models/UserProfilePageModel";
-import {IUserPage} from "../Dto/pageDataDto";
-import {IUserDto} from "../Dto/IUserDto";
-import {AuthExceptions, UserPageExceptions} from "../Errors/HttpExceptionsMessages";
+import { UserModel } from '../models/userModel';
+import { ApiError } from '../Errors/ApiErrors';
+import { UserProfilePageModel } from '../models/UserProfilePageModel';
+import { IUserPage } from '../Dto/pageDataDto';
+import { AuthExceptions, UserPageExceptions } from '../Errors/HttpExceptionsMessages';
 
 
 class UserPageService {
@@ -17,7 +16,7 @@ class UserPageService {
         if (!userPage) {
             throw ApiError.NotFound(UserPageExceptions.ImgNotFound)
         }
-        const userPageData: IUserPage = {
+        return {
             userData: {
                 UUID: user.UUID,
                 username: user.username,
@@ -28,9 +27,7 @@ class UserPageService {
             description: userPage.description,
             socialLinks: JSON.parse(userPage.socialLinks),
             contactEmail: userPage.contactEmail,
-            avatarImg: userPage.avatarImage
         }
-        return userPageData
     }
 
     static async saveUserPage(userPageData: IUserPage): Promise<IUserPage> {
@@ -43,7 +40,6 @@ class UserPageService {
             description: userPageData.description,
             socialLinks: JSON.stringify(userPageData.socialLinks),
             contactEmail: userPageData.contactEmail,
-            avatarImage: userPageData.avatarImg
         })
         await user.update({
             username: userPageData.userData.username,
