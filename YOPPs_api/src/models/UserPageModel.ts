@@ -3,7 +3,7 @@ import {dbContext} from "../dbController/dbConnect";
 import { FileModel } from './File-model';
 
 
-export class UserProfilePageModel extends Model {
+export class UserPageModel extends Model {
     declare userUUID: string;
     declare description: string;
     declare contactEmail: string;
@@ -11,7 +11,7 @@ export class UserProfilePageModel extends Model {
     declare avatarId: number;
 }
 
-UserProfilePageModel.init({
+UserPageModel.init({
     userUUID: {
         type: DataTypes.UUID,
         allowNull: false
@@ -38,9 +38,13 @@ UserProfilePageModel.init({
     sequelize: dbContext
 })
 
-UserProfilePageModel.hasMany(FileModel)
+UserPageModel.hasMany(FileModel, {
+    foreignKey: 'id'
+})
 
-FileModel.belongsTo(UserProfilePageModel)
+
+
+
 
 
 

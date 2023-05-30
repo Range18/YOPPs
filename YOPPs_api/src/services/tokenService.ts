@@ -1,9 +1,9 @@
-import jwt, {Jwt, JwtPayload} from "jsonwebtoken";
-import {jwtSettings} from "../../config";
-import {Token} from "../models/Token-model";
-import {IUserDto} from "../Dto/IUserDto";
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { jwtSettings } from '../../config';
+import { Token } from '../models/Token-model';
+import { IUserDto } from '../Dto/IUserDto';
 
-class TokenService {
+abstract class TokenService {
     static generateTokens(payload: IUserDto) {
         const refreshToken = jwt.sign(payload, jwtSettings.secret, {expiresIn: jwtSettings.authExpires.refresh})
         const accessToken = jwt.sign(payload, jwtSettings.secret, {expiresIn: jwtSettings.authExpires.access})
@@ -12,8 +12,7 @@ class TokenService {
     }
 
     static generateActivationToken(payload: IUserDto): string {
-        const token = jwt.sign(payload, jwtSettings.secret)
-        return token
+        return jwt.sign(payload, jwtSettings.secret)
     }
 
     static async saveRefreshToken(UUID: string, refreshUUID: string): Promise<Token | null> {
@@ -21,40 +20,32 @@ class TokenService {
             const tokenData: Token | null = await Token.findOne({where: {UUID}})
             if (tokenData) {
                 tokenData.UUID = refreshUUID
-                return tokenData.save()
+                return await tokenData.save()
             }
             const maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
-            const token = await Token.create({
+            return await Token.create({
                 userUUID: UUID,
                 UUID: refreshUUID,
                 expireIn: Date.now() + maxAgeRefreshToken
             })
-            return token
         } catch (err) {
             console.log(err)
             return null
         }
     }
 
-    static async removeToken(token: string): Promise<Token | null> {
+    static async removeToken(token: string): Promise<void> {
         try {
             const tokenPayload = this.validateToken(token)
-            const tokenData = await Token.findOne({where: {UUID: tokenPayload?.refreshUUID}})
-            if (!tokenData) {
-                return null;
-            }
-            await tokenData.destroy()
-            return tokenData;
+            await Token.destroy({where:{UUID: tokenPayload?.refreshUUID}})
         } catch (err) {
             console.log(err)
-            return null;
         }
     }
 
     static async findToken(UUID: string | undefined): Promise<Token | null> {
         try {
-            const tokenData: Token | null = await Token.findOne({where: {UUID}})
-            return tokenData;
+            return await Token.findOne({ where: { UUID } });
         } catch (err) {
             console.log(err)
             return null;

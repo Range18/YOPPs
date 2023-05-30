@@ -2,36 +2,23 @@ import { NextFunction, Request, Response } from 'express';
 import StorageService from '../services/storageService';
 import storageService from '../services/storageService';
 
-class StorageController {
+abstract class StorageController {
   static async uploadFile(req: Request, res: Response, next: NextFunction) {
     try {
       const file = req.file;
       console.log(file);
       const { userUUID } = req.params;
-      const fileDto = await StorageService.uploadFile(file, userUUID, 'avatar');
-      return res.status(201).json(fileDto);
+      await StorageService.uploadFile(file, userUUID, 'avatar');
+      return res.status(201).json({message: 'OK'});
     } catch (err) {
       next(err);
     }
   }
 
-  static async getAvatarByUUID(req: Request, res: Response, next: NextFunction) {
+  static async getAvatar(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userUUID } = req.params;
-      const fileName = await StorageService.getFileName(userUUID);
-      const buffer = await StorageService.getFile(fileName);
-
-      res.setHeader('Content-Type', 'image/png');
-      return res.send(buffer);
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  static async getAvatarByUsername(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { username } = req.params;
-      const fileName = await StorageService.getFileName(username);
+      const { usernameOrUUID } = req.params;
+      const fileName = await StorageService.getFileName(usernameOrUUID);
       const buffer = await StorageService.getFile(fileName);
 
       res.setHeader('Content-Type', 'image/png');

@@ -1,8 +1,7 @@
 import { unlink } from 'fs/promises';
 import { createReadStream } from 'fs';
 import { Buffer } from 'buffer';
-
-
+import { Op, where } from 'sequelize';
 import { IFileDto } from '../Dto/IFileDto';
 import { ApiError } from '../Errors/ApiErrors';
 import { UserPageExceptions } from '../Errors/HttpExceptionsMessages';
@@ -10,11 +9,12 @@ import { FileModel } from '../models/File-model';
 import { storageSettings } from '../../config';
 import multer, { FileFilterCallback } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import { UserProfilePageModel } from '../models/UserProfilePageModel';
+import { UserPageModel } from '../models/UserPageModel';
 import { UserModel } from '../models/userModel';
 
 
 abstract class StorageService {
+
   static readonly storageConfig = multer.diskStorage({
     destination: (req, file, callback) => {
       callback(null, storageSettings.destination);
@@ -24,13 +24,28 @@ abstract class StorageService {
     },
   });
 
+  static fileFilter(req: Express.Request, file: Express.Multer.File, callback: FileFilterCallback): void {
+    if (Array.from(storageSettings.allowedExtensions.keys()).includes(file.mimetype)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  }
+
+  private static async checkFileExtension(filename: string, mimeType: string): Promise<boolean> {
+    const buffer = await StorageService.getFile(filename);
+    const bufferString = buffer.toString('hex').toLocaleUpperCase();
+    return bufferString.startsWith(storageSettings.allowedExtensions.get(mimeType)!);
+  }
+
   static async getFileName(userField: string): Promise<string | null> {
-    const parentPage = await UserProfilePageModel.findOne({
-      where: [{ userUUID: userField },
-        {
-          userUUID: (await UserModel.findOne({ where: { username: userField } }))?.UUID,
-        },
-      ],
+    const parentPage = await UserPageModel.findOne({
+      where: {
+        [Op.or]: [
+          { userUUID: userField },
+          { userUUID: (await UserModel.findOne({ where: { username: userField } }))?.UUID ?? null },
+        ],
+      },
     });
     if (!parentPage) throw ApiError.NotFound(UserPageExceptions.PageNotFound);
     const file = await FileModel.findOne({ where: { id: parentPage?.avatarId } });
@@ -59,7 +74,7 @@ abstract class StorageService {
       StorageService.deleteFile(fileData.filename);
       throw ApiError.BadRequest(UserPageExceptions.ExtensionNotAllowed);
     }
-    const page = await UserProfilePageModel.findOne({ where: { userUUID: userUUID } });
+    const page = await UserPageModel.findOne({ where: { userUUID: userUUID } });
     if (!page) throw ApiError.NotFound(UserPageExceptions.PageNotFound);
 
     const copyOfFile = await FileModel.findOne({ where: { userUUID: userUUID, type: fileTypeField } });
@@ -102,19 +117,6 @@ abstract class StorageService {
     file?.destroy();
   }
 
-  static fileFilter(req: Express.Request, file: Express.Multer.File, callback: FileFilterCallback): void {
-    if (Array.from(storageSettings.allowedExtensions.keys()).includes(file.mimetype)) {
-      callback(null, true);
-    } else {
-      callback(null, false);
-    }
-  }
-
-  static async checkFileExtension(filename: string, mimeType: string): Promise<boolean> {
-    const buffer = await StorageService.getFile(filename);
-    const bufferString = buffer.toString('hex').toLocaleUpperCase();
-    return bufferString.startsWith(storageSettings.allowedExtensions.get(mimeType)!);
-  }
 }
 
 export default StorageService;

@@ -53,7 +53,7 @@ export const apiServer: IApiServer = {
   url: `http://localhost:8000`,
 };
 export const bcryptSalt: number = 10;
-export const force: boolean = true;
+export const force: boolean = false;
 export const clientServer: IClientServer = {
   port: parseInt(process.env.CLIENT_PORT as string),
   host: process.env.CLIENT_HOST as string,

@@ -3,11 +3,11 @@ import {clientServer, jwtSettings} from "../../config";
 import {NextFunction, Request, Response} from "express";
 import {PartialUserData} from "../entities/PartialUserData";
 
-class AuthController {
+abstract class AuthController {
     private static maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
 
 
-    async registration(req: Request, res: Response, next: NextFunction) {
+    static async registration(req: Request, res: Response, next: NextFunction) {
         try {
             const {username, email, password} = req.body;
             const userData = await AuthService.registration(username, email, password)
@@ -23,7 +23,7 @@ class AuthController {
         }
     }
 
-    async login(req: Request, res: Response, next: NextFunction) {
+    static async login(req: Request, res: Response, next: NextFunction) {
         try {
             const {email, password} = req.body;
             const userData = await AuthService.login(email, password)
@@ -39,10 +39,10 @@ class AuthController {
         }
     }
 
-    async logout(req: Request, res: Response, next: NextFunction) {
+    static async logout(req: Request, res: Response, next: NextFunction) {
         try {
             const {refreshToken} = req.cookies
-            const token = await AuthService.logout(refreshToken)
+            await AuthService.logout(refreshToken)
             res.clearCookie('refreshToken')
             return res.json({message: 'OK'})
         } catch (err) {
@@ -50,11 +50,11 @@ class AuthController {
         }
     }
 
-    async refresh(req: Request, res: Response, next: NextFunction) {
+    static async refresh(req: Request, res: Response, next: NextFunction) {
         try {
             const {refreshToken} = req.cookies
             const userData = await AuthService.refresh(refreshToken)
-
+            await AuthService.logout(refreshToken)
             res.cookie('refreshToken', userData.refreshToken, {maxAge: AuthController.maxAgeRefreshToken, httpOnly: true})
             const userDataPreview: PartialUserData = {
                 accessToken: userData.accessToken,
@@ -66,7 +66,7 @@ class AuthController {
         }
     }
 
-    async activate(req: Request, res: Response, next: NextFunction) {
+    static async activate(req: Request, res: Response, next: NextFunction) {
         try {
             const token = req.params.link
             await AuthService.activate(token)
@@ -77,4 +77,4 @@ class AuthController {
     }
 }
 
-export default new AuthController();
+export default AuthController;

@@ -3,8 +3,8 @@ import {NextFunction, Request, Response} from "express";
 
 
 
-class UserPageController {
-    async savePage(req: Request, res: Response, next: NextFunction) {
+abstract class UserPageController {
+    static async savePage(req: Request, res: Response, next: NextFunction) {
         try {
             const userPageData = req.body;
             await UserPageService.saveUserPage(userPageData)
@@ -14,10 +14,10 @@ class UserPageController {
         }
     }
 
-    async getPage(req: Request, res: Response, next: NextFunction) {
+    static async getPage(req: Request, res: Response, next: NextFunction) {
         try {
-            const username = req.params.username;
-            const userPageData = await UserPageService.getPageData(username)
+            const {usernameOrUUID} = req.params;
+            const userPageData = await UserPageService.getPageData(usernameOrUUID)
             return res.json(userPageData)
         } catch (err) {
             next(err)
@@ -25,4 +25,4 @@ class UserPageController {
     }
 }
 
-export default new UserPageController();
+export default UserPageController;

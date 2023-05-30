@@ -1,4 +1,4 @@
-//TODO add more exception
+
 export enum AuthExceptions {
     UserAlreadyExists = 'That user is already exits',
     UserNotFound = 'User not found',
