@@ -9,8 +9,8 @@ import { FileModel } from '../models/File-model';
 import { storageSettings } from '../../config';
 import multer, { FileFilterCallback } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import { UserPageModel } from '../models/UserPageModel';
-import { UserModel } from '../models/userModel';
+import { UserPageModel } from '../models/UserPage-model';
+import { UserModel } from '../models/User-model';
 
 
 abstract class StorageService {

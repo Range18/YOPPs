@@ -11,9 +11,6 @@ abstract class TokenService {
         return {refreshToken, accessToken}
     }
 
-    static generateActivationToken(payload: IUserDto): string {
-        return jwt.sign(payload, jwtSettings.secret)
-    }
 
     static async saveRefreshToken(UUID: string, refreshUUID: string): Promise<Token | null> {
         try {

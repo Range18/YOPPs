@@ -1,17 +1,18 @@
 import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 
-import { UserModel } from '../models/userModel';
-import { ApiError } from '../Errors/ApiErrors';
-import { apiServer, bcryptSalt } from '../../config';
+import {UserModel} from '../models/User-model';
+import {ApiError} from '../Errors/ApiErrors';
+import {apiServer, bcryptSalt} from '../../config';
 
 import MailService from './mailService';
 import TokenService from './tokenService';
-import { UserPageModel } from '../models/UserPageModel';
-import { IUserDto } from '../Dto/IUserDto';
-import { AuthExceptions, TokenExceptions } from '../Errors/HttpExceptionsMessages';
-import { IUserData } from '../entities/IUserData';
-import { Token } from '../models/Token-model';
+import {UserPageModel} from '../models/UserPage-model';
+import {IUserDto} from '../Dto/IUserDto';
+import {AuthExceptions, TokenExceptions} from '../Errors/HttpExceptionsMessages';
+import {IUserData} from '../entities/IUserData';
+import {Token} from '../models/Token-model';
+import {ActivationLinksModel} from "../models/ActivationLinksModel";
 
 
 abstract class AuthService {
@@ -34,9 +35,12 @@ abstract class AuthService {
             refreshUUID: uuidv4(),
             isActivated: user.isActivated
         }
-        const activationLink: string = TokenService.generateActivationToken(userDto)
-
-        MailService.sendActivationMail(email, `${apiServer.url}/api/auth/activate/${activationLink}`)
+        const activationCode: string = uuidv4()
+        await ActivationLinksModel.create({
+            userUUID: user.UUID,
+            linkCode: activationCode
+        })
+        MailService.sendActivationMail(email, `${apiServer.url}/api/auth/activate/${activationCode}`)
 
         const tokens = TokenService.generateTokens(userDto)
         await TokenService.saveRefreshToken(userDto.UUID, userDto.refreshUUID)
@@ -44,15 +48,14 @@ abstract class AuthService {
         return {...tokens, user: userDto}
     }
 
-    static async activate(token: string) {
-        const tokenData = TokenService.validateToken(token)
-        if (!tokenData) throw ApiError.BadRequest(TokenExceptions.InvalidActivationURL);
+    static async activate(code: string) {
+        const databaseNote = await ActivationLinksModel.findOne({where: {linkCode: code}})
+        if (!databaseNote) throw ApiError.BadRequest(TokenExceptions.InvalidActivationURL)
 
-        const UUID = tokenData.UUID
-        const user = await UserModel.findOne({where: {UUID}})
-        if (!user) throw ApiError.BadRequest(TokenExceptions.InvalidActivationURL);
-
+        const user = await UserModel.findOne({where: {UUID: databaseNote.userUUID}})
+        if (!user) throw ApiError.NotFound(AuthExceptions.UserNotFound)
         user.isActivated = true
+        databaseNote.destroy()
         await user.save()
     }
 

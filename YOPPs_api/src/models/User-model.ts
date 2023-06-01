@@ -1,6 +1,6 @@
 import {CreateOptions, DataTypes, Model, UUID} from "sequelize";
 import {dbContext} from "../dbController/dbConnect";
-import {UserPageModel} from "./UserPageModel";
+import {UserPageModel} from "./UserPage-model";
 import {Token} from "./Token-model";
 import {HookReturn} from "sequelize/types/hooks";
 

@@ -68,8 +68,8 @@ abstract class AuthController {
 
     static async activate(req: Request, res: Response, next: NextFunction) {
         try {
-            const token = req.params.link
-            await AuthService.activate(token)
+            const code = req.params.link
+            await AuthService.activate(code)
             return res.redirect(clientServer.url)
         } catch (err) {
             next(err)
