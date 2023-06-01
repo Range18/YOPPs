@@ -1,22 +1,44 @@
-import React, {useContext, useEffect} from 'react';
-import {Context} from "../index";
+import React, { FC, useContext, useEffect } from "react";
+import { Context } from "../index";
+import styles from "../assets/css/userPage.module.css";
+import { observer } from "mobx-react-lite";
+import { apiServer } from "../configTemplate";
 
-import {observer} from "mobx-react-lite";
+const UserPage: FC = () => {
+  const { store } = useContext(Context);
 
-const UserPage = () => {
-    const {store} = useContext(Context)
-    const username: string | undefined = window.location.pathname.split('/').at(-1)
+  const username: string | undefined = window.location.pathname
+    .split("/")
+    .at(-1);
 
+  useEffect(() => {
+    store.getUserPage(username!);
+  }, []);
+  return (
+    <div className={styles.container}>
+      <div className={styles.profileBoarder}>
+        <img
+          className={styles.avatar}
+          src={`${apiServer.url}/userPage/get/assets/avatar/${username}`}
+          alt={"user avatar"}
+        ></img>
 
-    useEffect(() => {
-        store.getUserPage(username!)
-    }, [])
+        <h2 className={styles.username}>
+          {`${store.userPage.userData.username}`}
+        </h2>
 
-    return (
-        <div>
-            <h3>{JSON.stringify(store.UserPage)}</h3>
+        <div className={styles.additionalUserData}>
+          {`${store.userPage.userData.name} 
+          ${store.userPage.userData.surname}, 
+          ${store.userPage.userData.age}`}
         </div>
-    );
+
+        <div className={styles.description}>
+          {`${store.userPage.description}`}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default observer(UserPage);

@@ -1,0 +1,41 @@
+.container{
+    /*centering profileBody*/
+    margin: auto;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    /*shadows*/
+    background: #252526;
+    border-radius: 15px;
+    box-shadow: 7px 7px 7px  ;
+}
+.username{
+
+}
+.additionalUserData{
+
+}
+.description{
+
+}
+
+.profileBoarder {
+    color: #FFFF;
+    width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.profileBoarder h2 {
+    margin-top: 0;
+}
+
+.avatar {
+    width: 150px;
+    height: 150px;
+    margin-right: 10px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}

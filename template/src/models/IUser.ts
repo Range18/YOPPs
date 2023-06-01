@@ -1,8 +1,7 @@
-
-
-export interface IUser{
-    UUID: string;
-    username: string;
-    refreshUUID: string;
-    isActivated: boolean;
+export interface IUser {
+  UUID: string;
+  username: string;
+  name: string;
+  surname: string;
+  age: string;
 }
