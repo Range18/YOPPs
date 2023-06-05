@@ -1,5 +1,6 @@
 import nodemailer, {Transporter} from "nodemailer";
 import {clientServer, smtpServer} from "../../config";
+import { MailDto, MailSubject } from '../Dto/MailDto';
 
 class MailService {
     transporter;
@@ -16,19 +17,13 @@ class MailService {
         })
     }
 
-    async sendActivationMail(recipient: string, link: string) {
+    async sendMail(mailDto: MailDto) {
         await this.transporter.sendMail({
             from: smtpServer.user,
-            to: recipient,
-            subject: 'Account activation on ' + clientServer.url,
+            to: mailDto.recipient,
+            subject: mailDto.subject,
             text: '',
-            html:
-                `
-            <div>
-                <h1>Для активации перейдите по ссылке</h1>
-                <a href="${link}">Activate your account</a>
-            </div>
-            `
+            html: mailDto.message
         })
     }
 

@@ -1,7 +1,7 @@
 import { UserModel } from '../models/User-model';
 import { ApiError } from '../Errors/ApiErrors';
 import { UserPageModel } from '../models/UserPage-model';
-import { IUserPage } from '../Dto/pageDataDto';
+import { IUserPage } from '../Dto/IPageDto';
 import { AuthExceptions, UserPageExceptions } from '../Errors/HttpExceptionsMessages';
 import { Op } from 'sequelize';
 

@@ -1,12 +1,14 @@
-import {IRouter, Router} from "express";
-import AuthController from "../controllers/authController";
-const authRoute: IRouter = Router()
+import { IRouter, Router } from 'express';
+import AuthController from '../controllers/authController';
 
-authRoute.post('/registration', AuthController.registration)
-authRoute.post('/login', AuthController.login)
-authRoute.get('/activate/:link',AuthController.activate)
-authRoute.post('/refresh', AuthController.refresh)
-authRoute.delete('/logout', AuthController.logout)
+const authRoute: IRouter = Router();
 
+authRoute.post('/registration', AuthController.registration);
+authRoute.post('/login', AuthController.login);
+authRoute.get('/activate/:link', AuthController.activate);
+authRoute.post('/refresh', AuthController.refresh);
+authRoute.delete('/logout', AuthController.logout);
 
+authRoute.post('/sendResetEmail', AuthController.sendResetPWDEmail);
+authRoute.patch('/resetPassword/:code', AuthController.resetPWD);
 export default authRoute;

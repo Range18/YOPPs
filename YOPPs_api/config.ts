@@ -71,10 +71,10 @@ export const database: IDatabase = {
 export const storageSettings: IStorageSettings = {
     destination: process.env.STORAGE_PATH as string,
     allowedExtensions: new Map()
-        .set('image/jpeg', 'FFD8')
-        .set('image/png', '89504E470D0A1A0A')
-        .set('image/jpg', '474946')
-        .set('image/gif', '474946'),
+      .set('image/jpeg', 'FFD8')
+      .set('image/png', '89504E470D0A1A0A')
+      .set('image/jpg', '474946')
+      .set('image/gif', '474946'),
     defaultAvatar: 'default.png',
 };
 
@@ -87,6 +87,7 @@ export const jwtSettings: IJwtSettings = {
     },
 };
 
+export const PWDCodeExpireIn: string = '24h';
 
 export const smtpServer: ISmtpServer = {
     agent: process.env.SMTP_AGENT as string,

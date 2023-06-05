@@ -11,6 +11,8 @@ export enum AuthExceptions {
 export enum TokenExceptions {
     InvalidActivationURL = 'Invalid activation URL',
     InvalidToken = 'Invalid token',
+    InvalidCode = 'Invalid code',
+    Expired = 'Token or code expired'
 }
 export enum UserPageExceptions {
     PageNotFound = 'Page not found',
