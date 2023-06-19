@@ -1,0 +1,45 @@
+.container{
+    width: 100%;
+    height: 70px;
+    background: #222222;
+    box-shadow: 7px 7px 7px ;
+}
+.innerContainer{
+    width: 80%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logoText{
+    margin: 0;
+    padding: 10px;
+    background: linear-gradient(140deg, rgba(0,161,238,1) 12%, rgba(0,255,179,1) 54%, rgba(0,190,101,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.buttons{
+    width: 20%;
+    display: flex;
+    justify-content: space-between;
+}
+.loginBtn{
+    font-family: 'Geologica', sans-serif;
+    font-size: 16px;
+    border-radius: 15px ;
+    padding: 3px 28px;
+    color: #FFFF;
+    background: #222222;
+    border-color: #FFFF;
+    cursor: pointer;
+}
+
+.signUpBtn{
+    font-family: 'Geologica', sans-serif;
+    font-size: 16px;
+    padding: 3px 28px;
+    border-radius: 15px ;
+    background: linear-gradient(140deg, rgba(0,161,238,1) 12%, rgba(0,255,179,1) 54%, rgba(0,190,101,1) 100%);
+    cursor: pointer;
+}

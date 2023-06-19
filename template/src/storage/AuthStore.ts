@@ -8,7 +8,7 @@ import { UserService } from "../services/userService";
 import { IPageResponse } from "../models/IPageResponse";
 import { buffer } from "stream/consumers";
 
-export default class Store {
+export default class AuthStore {
   userPage: IPageResponse = { userData: {}, socialLinks: {} } as IPageResponse;
   user: IUser = {} as IUser;
   isAuth: boolean = false;

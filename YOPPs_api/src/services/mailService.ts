@@ -1,6 +1,9 @@
 import nodemailer, {Transporter} from "nodemailer";
 import {clientServer, smtpServer} from "../../config";
 import { MailDto, MailSubject } from '../Dto/MailDto';
+import { Logger } from '../logger/logger';
+import { ApiError } from '../Errors/ApiErrors';
+import { errorMiddleware } from '../middlewares/errorMiddleware';
 
 class MailService {
     transporter;
@@ -24,7 +27,10 @@ class MailService {
             subject: mailDto.subject,
             text: '',
             html: mailDto.message
+        }).catch(error => {
+            Logger.log(error, 'ERROR')
         })
+
     }
 
 }

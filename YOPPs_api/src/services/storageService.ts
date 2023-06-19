@@ -1,121 +1,136 @@
 import { unlink } from 'fs/promises';
-import { createReadStream } from 'fs';
+import { createReadStream, statSync } from 'fs';
 import { Buffer } from 'buffer';
-import { Op, where } from 'sequelize';
-import { IFileDto } from '../Dto/IFileDto';
+import { IFile } from '../Dto/IFile';
 import { ApiError } from '../Errors/ApiErrors';
 import { UserPageExceptions } from '../Errors/HttpExceptionsMessages';
 import { FileModel } from '../models/File-model';
 import { storageSettings } from '../../config';
 import multer, { FileFilterCallback } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import { UserPageModel } from '../models/UserPage-model';
-import { UserModel } from '../models/User-model';
+import path from 'path';
+import UserPageService from './userPageService';
+import { Op } from 'sequelize';
 
 
 abstract class StorageService {
 
-  static readonly storageConfig = multer.diskStorage({
-    destination: (req, file, callback) => {
-      callback(null, storageSettings.destination);
-    },
-    filename: (req, file, callback) => {
-      callback(null, uuidv4() + '.' + file.mimetype.split('/')[1]);
-    },
-  });
-
-  static fileFilter(req: Express.Request, file: Express.Multer.File, callback: FileFilterCallback): void {
-    if (Array.from(storageSettings.allowedExtensions.keys()).includes(file.mimetype)) {
-      callback(null, true);
-    } else {
-      callback(null, false);
-    }
-  }
-
-  private static async checkFileExtension(filename: string, mimeType: string): Promise<boolean> {
-    const buffer = await StorageService.getFile(filename);
-    const bufferString = buffer.toString('hex').toLocaleUpperCase();
-    return bufferString.startsWith(storageSettings.allowedExtensions.get(mimeType)!);
-  }
-
-  static async getFileName(userField: string): Promise<string | null> {
-    const parentPage = await UserPageModel.findOne({
-      where: {
-        [Op.or]: [
-          { userUUID: userField },
-          { userUUID: (await UserModel.findOne({ where: { username: userField } }))?.UUID ?? null },
-        ],
-      },
-    });
-    if (!parentPage) throw ApiError.NotFound(UserPageExceptions.PageNotFound);
-    const file = await FileModel.findOne({ where: { id: parentPage?.avatarId } });
-    return file?.fileName ?? null;
-  }
-
-  static async getFile(fileName: string | null): Promise<Buffer> {
-    fileName = fileName ?? storageSettings.defaultAvatar;
-    const readableStream = createReadStream(storageSettings.destination + '\\' + fileName);
-    const chunks: any[] = [];
-
-    return new Promise(resolve => {
-      readableStream.on('data', (chunk) => {
-        chunks.push(chunk);
-      });
-      readableStream.on('end', () => {
-        resolve(Buffer.concat(chunks));
-      });
+    static readonly storageConfig = multer.diskStorage({
+        destination: (req, file, callback) => {
+            callback(null, storageSettings.destination);
+        },
+        filename: (req, file, callback) => {
+            callback(null, uuidv4() + '.' + file.mimetype.split('/')[1]);
+        },
     });
 
-  }
-
-  static async uploadFile(fileData: Express.Multer.File | undefined, userUUID: string, fileTypeField: string): Promise<IFileDto> {
-    if (!fileData) throw ApiError.NotFound(UserPageExceptions.NoFile);
-    if (!await StorageService.checkFileExtension(fileData.filename, fileData.mimetype)) {
-      StorageService.deleteFile(fileData.filename);
-      throw ApiError.BadRequest(UserPageExceptions.ExtensionNotAllowed);
+    static fileFilter(req: Express.Request, file: Express.Multer.File, callback: FileFilterCallback): void {
+        if (Array.from(storageSettings.allowedExtensions.keys()).includes(file.mimetype)) {
+            callback(null, true);
+        } else {
+            callback(ApiError.BadRequest(UserPageExceptions.ExtensionNotAllowed));
+        }
     }
-    const page = await UserPageModel.findOne({ where: { userUUID: userUUID } });
-    if (!page) throw ApiError.NotFound(UserPageExceptions.PageNotFound);
 
-    const copyOfFile = await FileModel.findOne({ where: { userUUID: userUUID, type: fileTypeField } });
-    if (copyOfFile) {
-      unlink(storageSettings.destination + '\\' + copyOfFile.fileName);
-      await copyOfFile.update({
-        fileName: fileData.filename,
-        size: fileData.size,
-      });
-      await page.update({
-        avatarId: copyOfFile.id,
-      });
-    } else {
-      const newFile = await FileModel.create({
-        userUUID: userUUID,
-        fileName: fileData.filename,
-        type: fileTypeField,
-        size: fileData.size,
-      });
-      await page.update({
-        avatarId: newFile.id,
-      });
+    private static async checkFileExtension(filename: string, mimeType: string): Promise<boolean> {
+        const buffer = await StorageService.getFile(filename);
+
+        const bufferString = buffer.toString('hex').toLocaleUpperCase();
+        return bufferString.startsWith(storageSettings.allowedExtensions.get(mimeType)!);
     }
-    return {
-      originalName: fileData.originalname,
-      filename: fileData.filename,
-      type: fileTypeField,
-      mimetype: fileData.mimetype,
-      encoding: fileData.encoding,
-      destination: fileData.destination,
-      path: fileData.path,
-      size: fileData.size,
-    };
-  }
 
-  static async deleteFile(fileName: string | null): Promise<void> {
-    if (!fileName) throw ApiError.NotFound(UserPageExceptions.ImgNotFound);
-    unlink(storageSettings.destination + '\\' + fileName);
-    const file = await FileModel.findOne({ where: { fileName } });
-    file?.destroy();
-  }
+    private static checkFileSize(filename: string): boolean {
+        const fileSize = statSync(`${storageSettings.destination}\\${filename}`).size;
+        return fileSize <= storageSettings.maxFileSize;
+    }
+
+    static async getFileName(userField: string): Promise<string | null> {
+        const parentPage = await UserPageService.getPage(userField);
+        if (!parentPage) throw ApiError.NotFound(UserPageExceptions.PageNotFound);
+        const file = await FileModel.findOne({ where: { id: parentPage?.avatarId } });
+        return file?.fileName ?? null;
+
+    }
+
+    static getFileExt(filename: string): string {
+        return path.extname(filename).slice(1);
+    }
+
+    static async getFile(fileName: string | null): Promise<Buffer> {
+        fileName = fileName ?? storageSettings.defaultAvatar;
+        const readableStream = createReadStream(storageSettings.destination + '\\' + fileName);
+        const chunks: any[] = [];
+
+        return new Promise(resolve => {
+            readableStream.on('data', (chunk) => {
+                chunks.push(chunk);
+            });
+            readableStream.on('end', () => {
+                resolve(Buffer.concat(chunks));
+            });
+        });
+    }
+
+    static async uploadFile(fileData: Express.Multer.File | undefined, usernameOrUUID: string, fileTypeField: string): Promise<IFile> {
+        if (!fileData) throw ApiError.NotFound(UserPageExceptions.NoFile);
+        const isExtAllowed = await StorageService.checkFileExtension(fileData.filename, fileData.mimetype);
+        if (!isExtAllowed) {
+            StorageService.deleteFile(fileData.filename);
+            throw ApiError.BadRequest(UserPageExceptions.ExtensionNotAllowed);
+        }
+
+        const isSizeAllowed = StorageService.checkFileSize(fileData.filename);
+        if (!isSizeAllowed) {
+            StorageService.deleteFile(fileData.filename);
+            throw ApiError.BadRequest(UserPageExceptions.MaxSizeExceeded);
+        }
+
+        const page = await UserPageService.getPage(usernameOrUUID);
+        if (!page) throw ApiError.NotFound(UserPageExceptions.PageNotFound);
+
+        const copyOfFile = await FileModel.findOne({
+            where: {
+                [Op.or]: [
+                    { userUUID: usernameOrUUID, type: fileTypeField },
+                    { userUUID: page.userUUID, type: fileTypeField },
+                ],
+            },
+        });
+        if (copyOfFile) {
+            unlink(storageSettings.destination + '\\' + copyOfFile.fileName);
+            await copyOfFile.update({
+                fileName: fileData.filename,
+                size: fileData.size,
+            });
+        } else {
+            const newFile = await FileModel.create({
+                userUUID: page.userUUID,
+                fileName: fileData.filename,
+                type: fileTypeField,
+                size: fileData.size,
+            });
+            await page.update({
+                avatarId: newFile.id,
+            });
+        }
+        return {
+            originalName: fileData.originalname,
+            filename: fileData.filename,
+            type: fileTypeField,
+            mimetype: fileData.mimetype,
+            encoding: fileData.encoding,
+            destination: fileData.destination,
+            path: fileData.path,
+            size: fileData.size,
+        };
+    }
+
+    static async deleteFile(fileName: string | null): Promise<void> {
+        if (!fileName) throw ApiError.NotFound(UserPageExceptions.ImgNotFound);
+        unlink(storageSettings.destination + '\\' + fileName);
+        const file = await FileModel.findOne({ where: { fileName } });
+        file?.destroy();
+    }
 
 }
 

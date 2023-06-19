@@ -8,7 +8,7 @@ import { apiServer, bcryptSalt, PWDCodeExpireIn } from '../../config';
 import MailService from './mailService';
 import TokenService from './tokenService';
 import { UserPageModel } from '../models/UserPage-model';
-import { IUserDto } from '../Dto/IUserDto';
+import { UserDto } from '../Dto/UserDto';
 import { AuthExceptions, TokenExceptions } from '../Errors/HttpExceptionsMessages';
 import { IUserData } from '../entities/IUserData';
 import { ActivationLinksModel } from '../models/ActivationLinksModel';
@@ -30,7 +30,7 @@ abstract class AuthService {
 
         UserPageModel.create({ userUUID: user.UUID });
 
-        const userDto: IUserDto = {
+        const userDto: UserDto = {
             UUID: user.UUID,
             username: user.username,
             refreshUUID: uuidv4(),
@@ -67,7 +67,7 @@ abstract class AuthService {
 
         const isPassEquals = await bcrypt.compare(password, user.password);
         if (!isPassEquals) throw ApiError.BadRequest(AuthExceptions.WrongPassword);
-        const userDto: IUserDto = {
+        const userDto: UserDto = {
             UUID: user.dataValues.UUID,
             username: user.dataValues.username,
             refreshUUID: uuidv4(),
@@ -88,7 +88,7 @@ abstract class AuthService {
         if (!tokenFromDB) throw ApiError.UnauthorizedError(TokenExceptions.InvalidToken);
 
         const user = await UserModel.findOne({ where: { UUID: userData.UUID } });
-        const userDto: IUserDto = {
+        const userDto: UserDto = {
             UUID: user?.dataValues.UUID,
             username: user?.dataValues.username,
             refreshUUID: uuidv4(),
@@ -132,6 +132,15 @@ abstract class AuthService {
 
         user.password = bcrypt.hashSync(newPassword, bcryptSalt);
         await user.save();
+    }
+
+    static async resendActivateEmail(email: string, userData: UserDto) {
+        await ActivationLinksModel.destroy({where:{userUUID: userData.UUID}})
+        const activateObj =  await ActivationLinksModel.create({
+            userUUID: userData.UUID,
+            code: uuidv4()
+        })
+       MailService.sendMail(new MailDto('activate', email, activateObj.linkCode ))
     }
 }
 

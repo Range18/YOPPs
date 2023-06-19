@@ -1,43 +1,47 @@
 import { NextFunction, Request, Response } from 'express';
 import StorageService from '../services/storageService';
-import storageService from '../services/storageService';
+import { storageSettings } from '../../config';
+
 
 abstract class StorageController {
-  static async uploadFile(req: Request, res: Response, next: NextFunction) {
-    try {
-      const file = req.file;
-      console.log(file);
-      const { userUUID } = req.params;
-      await StorageService.uploadFile(file, userUUID, 'avatar');
-      return res.status(201).json({message: 'OK'});
-    } catch (err) {
-      next(err);
+    static async uploadFile(req: Request, res: Response, next: NextFunction) {
+        try {
+            const file = req.file;
+            const { usernameOrUUID } = req.params;
+            await StorageService.uploadFile(file, usernameOrUUID, 'avatar');
+            res.status(201).json({ message: 'OK' });
+            next()
+        } catch (err) {
+            next(err);
+        }
     }
-  }
 
-  static async getAvatar(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { usernameOrUUID } = req.params;
-      const fileName = await StorageService.getFileName(usernameOrUUID);
-      const buffer = await StorageService.getFile(fileName);
+    static async getAvatar(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { usernameOrUUID } = req.params;
+            const fileName = await StorageService.getFileName(usernameOrUUID);
+            const buffer = await StorageService.getFile(fileName);
+            const fileExt = StorageService.getFileExt(fileName ?? storageSettings.defaultAvatar);
 
-      res.setHeader('Content-Type', 'image/png');
-      return res.send(buffer);
-    } catch (err) {
-      next(err);
+            res.setHeader('Content-Type', `image/${fileExt}`);
+            res.send(buffer);
+            next()
+        } catch (err) {
+            next(err);
+        }
     }
-  }
 
-  static async removeAvatar(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { userUUID } = req.params;
-      const fileName = await StorageService.getFileName(userUUID)
-      await StorageService.deleteFile(fileName)
-      return res.status(204).json({ message: 'OK' });
-    } catch (err) {
-      next(err);
+    static async removeAvatar(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { usernameOrUUID } = req.params;
+            const fileName = await StorageService.getFileName(usernameOrUUID);
+            await StorageService.deleteFile(fileName);
+            res.status(204).json({ message: 'OK' });
+            next()
+        } catch (err) {
+            next(err);
+        }
     }
-  }
 }
 
 export default StorageController;

@@ -3,6 +3,7 @@ import { clientServer, jwtSettings } from '../../config';
 import { NextFunction, Request, Response } from 'express';
 import { PartialUserData } from '../entities/PartialUserData';
 
+
 abstract class AuthController {
     private static maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000;
 
@@ -20,7 +21,8 @@ abstract class AuthController {
                 accessToken: userData.accessToken,
                 user: userData.user,
             };
-            return res.status(201).json({ userDataPreview, message: 'OK' });
+            res.status(201).json(userDataPreview);
+            next();
         } catch (err) {
             next(err);
         }
@@ -39,7 +41,8 @@ abstract class AuthController {
                 accessToken: userData.accessToken,
                 user: userData.user,
             };
-            return res.status(201).json({ userDataPreview, message: 'OK' });
+            res.status(201).json(userDataPreview);
+            next();
         } catch (err) {
             next(err);
         }
@@ -50,11 +53,13 @@ abstract class AuthController {
             const { refreshToken } = req.cookies;
             await AuthService.logout(refreshToken);
             res.clearCookie('refreshToken');
-            return res.json({ message: 'OK' });
+            res.json({ message: 'OK' });
+            next();
         } catch (err) {
             next(err);
         }
     }
+
 
     static async refresh(req: Request, res: Response, next: NextFunction) {
         try {
@@ -69,7 +74,19 @@ abstract class AuthController {
                 accessToken: userData.accessToken,
                 user: userData.user,
             };
-            return res.json({ userDataPreview, message: 'OK' });
+            res.json(userDataPreview);
+            next();
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async resendActivateEmail(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email } = req.body;
+            const userData = req['user'];
+            await AuthService.resendActivateEmail(email, userData);
+            next();
         } catch (err) {
             next(err);
         }
@@ -79,7 +96,8 @@ abstract class AuthController {
         try {
             const code = req.params.link;
             await AuthService.activate(code);
-            return res.redirect(clientServer.url);
+            res.redirect(clientServer.url);
+            next();
         } catch (err) {
             next(err);
         }
@@ -89,7 +107,8 @@ abstract class AuthController {
         try {
             const { email } = req.body;
             await AuthService.sendResetEmail(email);
-            return res.status(204).json();
+            res.status(204).json();
+            next();
         } catch (err) {
             next(err);
         }
@@ -100,7 +119,8 @@ abstract class AuthController {
             const { code } = req.params;
             const { password } = req.body;
             await AuthService.resetPWD(code, password);
-            return res.status(204).json();
+            res.status(204).json();
+            next();
         } catch (err) {
             next(err);
         }

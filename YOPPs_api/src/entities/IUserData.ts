@@ -1,9 +1,8 @@
-import {IUserDto} from "../Dto/IUserDto";
+import {UserDto} from "../Dto/UserDto";
 
 
 export interface IUserData {
-
     refreshToken: string;
     accessToken: string,
-    user: IUserDto
+    user: UserDto
 }

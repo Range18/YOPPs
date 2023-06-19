@@ -1,5 +1,6 @@
 import {Sequelize} from "sequelize";
 import {database} from "../../config";
+import { Logger } from '../logger/logger';
 
 
 export const dbContext = new Sequelize(database.dbName,database.user,database.password, {
@@ -12,6 +13,7 @@ export const dbContext = new Sequelize(database.dbName,database.user,database.pa
 export async function connectDB() {
     try {
         await dbContext.authenticate()
+        Logger.log('Database is running')
     } catch (err) {
         console.log(err)
     }

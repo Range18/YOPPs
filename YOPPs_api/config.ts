@@ -45,22 +45,23 @@ interface IStorageSettings {
     destination: string;
     allowedExtensions: Map<string, string>;
     defaultAvatar: string;
+    maxFileSize: number;
 }
 
-export const apiServer: IApiServer = {
+export const apiServer: Readonly<IApiServer> = {
     port: parseInt(process.env.API_PORT as string),
     host: process.env.API_HOST as string,
     url: `http://localhost:8000`,
 };
 export const bcryptSalt: number = 10;
-export const force: boolean = true;
-export const clientServer: IClientServer = {
+export const dropDatabaseDev: boolean = false;
+export const clientServer: Readonly<IClientServer> = {
     port: parseInt(process.env.CLIENT_PORT as string),
     host: process.env.CLIENT_HOST as string,
     url: `http://localhost:3000`,
 };
 
-export const database: IDatabase = {
+export const database: Readonly<IDatabase> = {
     port: parseInt(process.env.DATABASE_PORT as string),
     host: process.env.DATABASE_HOST as string,
     user: process.env.DATABASE_USER as string,
@@ -68,7 +69,7 @@ export const database: IDatabase = {
     dbName: process.env.DATABASE_NAME as string,
     timezone: process.env.DATABASE_TIMEZONE as string,
 };
-export const storageSettings: IStorageSettings = {
+export const storageSettings: Readonly<IStorageSettings> = {
     destination: process.env.STORAGE_PATH as string,
     allowedExtensions: new Map()
       .set('image/jpeg', 'FFD8')
@@ -76,10 +77,11 @@ export const storageSettings: IStorageSettings = {
       .set('image/jpg', '474946')
       .set('image/gif', '474946'),
     defaultAvatar: 'default.png',
+    maxFileSize: 8196 * 1024,
 };
 
 
-export const jwtSettings: IJwtSettings = {
+export const jwtSettings: Readonly<IJwtSettings> = {
     secret: process.env.JWT_SECRET as string,
     authExpires: {
         refresh: process.env.REFRESH_EXPIRE as string,
@@ -89,7 +91,7 @@ export const jwtSettings: IJwtSettings = {
 
 export const PWDCodeExpireIn: string = '24h';
 
-export const smtpServer: ISmtpServer = {
+export const smtpServer: Readonly<ISmtpServer> = {
     agent: process.env.SMTP_AGENT as string,
     port: parseInt(process.env.SMTP_PORT as string),
     host: process.env.SMTP_HOST as string,

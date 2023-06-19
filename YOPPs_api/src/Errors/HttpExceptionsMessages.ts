@@ -18,5 +18,6 @@ export enum UserPageExceptions {
     PageNotFound = 'Page not found',
     ImgNotFound = 'Image not found',
     NoFile = 'No file was uploaded',
-    ExtensionNotAllowed = 'This file extension is not allowed '
+    ExtensionNotAllowed = 'This file extension is not allowed',
+    MaxSizeExceeded = 'File size is more than 8 Mb'
 }

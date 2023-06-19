@@ -1,10 +1,11 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { jwtSettings } from '../../config';
 import { Token } from '../models/Token-model';
-import { IUserDto } from '../Dto/IUserDto';
+import { UserDto } from '../Dto/UserDto';
+import { Logger } from '../logger/logger';
 
 abstract class TokenService {
-    static generateTokens(payload: IUserDto) {
+    static generateTokens(payload: UserDto) {
         const refreshToken = jwt.sign(payload, jwtSettings.secret, {expiresIn: jwtSettings.authExpires.refresh})
         const accessToken = jwt.sign(payload, jwtSettings.secret, {expiresIn: jwtSettings.authExpires.access})
 
@@ -26,7 +27,7 @@ abstract class TokenService {
                 expireIn: Date.now() + maxAgeRefreshToken
             })
         } catch (err) {
-            console.log(err)
+            Logger.log(err, 'ERROR')
             return null
         }
     }
@@ -36,7 +37,7 @@ abstract class TokenService {
             const tokenPayload = this.validateToken(token)
             await Token.destroy({where:{UUID: tokenPayload?.refreshUUID}})
         } catch (err) {
-            console.log(err)
+            Logger.log(err, 'ERROR')
         }
     }
 
@@ -44,18 +45,18 @@ abstract class TokenService {
         try {
             return await Token.findOne({ where: { UUID } });
         } catch (err) {
-            console.log(err)
+            Logger.log(err, 'ERROR')
             return null;
         }
     }
 
 
-    static validateToken(token: string): IUserDto | null {
+    static validateToken(token: string): UserDto | null {
         try {
-            const userData: string | IUserDto | JwtPayload = jwt.verify(token, jwtSettings.secret)
-            return userData as IUserDto;
+            const userData: string | UserDto | JwtPayload = jwt.verify(token, jwtSettings.secret)
+            return userData as UserDto;
         } catch (err) {
-            console.log(err)
+            Logger.log(err, 'ERROR')
             return null;
         }
     }

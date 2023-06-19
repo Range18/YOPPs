@@ -1,4 +1,4 @@
-export interface IFileDto {
+export interface IFile {
     filename: string;
     type: string;
     encoding: string;

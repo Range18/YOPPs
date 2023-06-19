@@ -1,14 +1,14 @@
 import React, { createContext } from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
+import "./assets/css/index.css";
 import App from "./App";
-import Store from "./storage/store";
+import AuthStore from "./storage/AuthStore";
 
 interface Storage {
-  store: Store;
+  store: AuthStore;
 }
 
-const store = new Store();
+const store = new AuthStore();
 
 export const Context = createContext<Storage>({
   store
