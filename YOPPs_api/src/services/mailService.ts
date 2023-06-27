@@ -1,9 +1,7 @@
-import nodemailer, {Transporter} from "nodemailer";
-import {clientServer, smtpServer} from "../../config";
-import { MailDto, MailSubject } from '../Dto/MailDto';
+import nodemailer from "nodemailer";
+import {smtpServer} from "../../config";
+import { MailDto } from '../Dto/MailDto';
 import { Logger } from '../logger/logger';
-import { ApiError } from '../Errors/ApiErrors';
-import { errorMiddleware } from '../middlewares/errorMiddleware';
 
 class MailService {
     transporter;

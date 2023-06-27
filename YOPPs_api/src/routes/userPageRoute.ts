@@ -1,15 +1,16 @@
 import { IRouter, Router } from 'express';
 import UserPageController from '../controllers/userPageController';
-import { authorizedAndActivated } from '../middlewares/authorizedAndActivated';
+import { activatedMiddleware } from '../middlewares/activatedMiddleware';
 import storageController from '../controllers/storageController';
+import { authMiddleware } from '../middlewares/authMiddleware';
 
 const userRouter: IRouter = Router();
 
-userRouter.post('/save', authorizedAndActivated, UserPageController.savePage);
+userRouter.post('/save', authMiddleware, activatedMiddleware, UserPageController.savePage);
 userRouter.get('/get/:usernameOrUUID', UserPageController.getPage);
 
 
-userRouter.post('/save/assets/avatar/:usernameOrUUID', authorizedAndActivated, storageController.uploadFile);
+userRouter.post('/save/assets/avatar/:usernameOrUUID', authMiddleware,activatedMiddleware, storageController.uploadFile);
 userRouter.get('/get/assets/avatar/:usernameOrUUID', storageController.getAvatar);
-userRouter.delete('/delete/assets/userAvatar/:usernameOrUUID', authorizedAndActivated, storageController.removeAvatar);
+userRouter.delete('/delete/assets/userAvatar/:usernameOrUUID', authMiddleware, activatedMiddleware, storageController.removeAvatar);
 export default userRouter;

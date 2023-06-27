@@ -15,11 +15,12 @@ abstract class TokenService {
 
     static async saveRefreshToken(UUID: string, refreshUUID: string): Promise<Token | null> {
         try {
-            const tokenData: Token | null = await Token.findOne({where: {UUID}})
-            if (tokenData) {
-                tokenData.UUID = refreshUUID
-                return await tokenData.save()
-            }
+            //if u don`t want to create a new session, this code just updates existing
+            // const tokenData: Token | null = await Token.findOne({where: {userUUID: UUID}})
+            // if (tokenData) {
+            //     tokenData.UUID = refreshUUID
+            //     return await tokenData.save()
+            // }
             const maxAgeRefreshToken = Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000
             return await Token.create({
                 userUUID: UUID,

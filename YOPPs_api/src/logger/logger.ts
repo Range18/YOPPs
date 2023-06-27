@@ -7,11 +7,13 @@ type LogType = 'LOG' | 'INFO' | 'WARN' | 'ERROR'
 
 export class Logger {
     static loggerMiddleware(req: Request, res: Response, next: NextFunction) {
-        console.log('\x1b[32m[Server] -', Logger.getDateNow(), '\x1b[38;5;11m[LOG]', `\x1b[38;5;5m${req.method}`, `\x1b[32m${req.url}`, res.statusCode, '\x1b[38;5;15m');
+        if (res.headersSent) {
+            console.log('\x1b[32m[Server] -', Logger.getDateNow(), '\x1b[38;5;11m[LOG]', `\x1b[38;5;5m${req.method}`, `\x1b[32m${req.url}`, res.statusCode, '\x1b[38;5;15m');
+        }
     }
 
     static log(message: string, type: LogType = 'INFO', reqLink?: string, resStatus?: number, errors?: any[]) {
-        if(reqLink || resStatus){
+        if (reqLink || resStatus) {
             console.log('\x1b[32m[Server] -', Logger.getDateNow(),
               `${Logger.getLogTypeColor(type)}[${type}]`,
               `\x1b[32m${reqLink}`,
@@ -19,8 +21,7 @@ export class Logger {
               `\x1b[32m${message}`,
               `${errors}`,
               '\x1b[38;5;15m');
-        }
-        else {
+        } else {
             console.log('\x1b[32m[Server] -', Logger.getDateNow(),
               `${Logger.getLogTypeColor(type)}[${type}]`,
               `\x1b[32m${message}`,
