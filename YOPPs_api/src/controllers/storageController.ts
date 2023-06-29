@@ -1,14 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 import StorageService from '../services/storageService';
 import { storageSettings } from '../../config';
+import { UserDto } from '../Dto/UserDto';
 
 
 abstract class StorageController {
     static async uploadFile(req: Request, res: Response, next: NextFunction) {
         try {
             const file = req.file;
-            const { usernameOrUUID } = req.params;
-            await StorageService.uploadFile(file, usernameOrUUID, 'avatar');
+            const user : UserDto = req['user']
+            await StorageService.uploadFile(file, user.UUID, 'avatar');
             res.status(201).json({ message: 'OK' });
             next()
         } catch (err) {
@@ -33,8 +34,8 @@ abstract class StorageController {
 
     static async removeAvatar(req: Request, res: Response, next: NextFunction) {
         try {
-            const { usernameOrUUID } = req.params;
-            const fileName = await StorageService.getFileName(usernameOrUUID);
+            const user: UserDto = req['user']
+            const fileName = await StorageService.getFileName(user.UUID);
             await StorageService.deleteFile(fileName);
             res.status(204).json({ message: 'OK' });
             next()

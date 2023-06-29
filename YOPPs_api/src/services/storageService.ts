@@ -71,7 +71,7 @@ abstract class StorageService {
         });
     }
 
-    static async uploadFile(fileData: Express.Multer.File | undefined, usernameOrUUID: string, fileTypeField: string): Promise<IFile> {
+    static async uploadFile(fileData: Express.Multer.File | undefined, userUUID: string, fileTypeField: string): Promise<IFile> {
         if (!fileData) throw ApiError.NotFound(UserPageExceptions.NoFile);
         const isExtAllowed = await StorageService.checkFileExtension(fileData.filename, fileData.mimetype);
         if (!isExtAllowed) {
@@ -85,16 +85,11 @@ abstract class StorageService {
             throw ApiError.BadRequest(UserPageExceptions.MaxSizeExceeded);
         }
 
-        const page = await UserPageService.getPage(usernameOrUUID);
+        const page = await UserPageService.getPage(userUUID);
         if (!page) throw ApiError.NotFound(UserPageExceptions.PageNotFound);
 
         const copyOfFile = await FileModel.findOne({
-            where: {
-                [Op.or]: [
-                    { userUUID: usernameOrUUID, type: fileTypeField },
-                    { userUUID: page.userUUID, type: fileTypeField },
-                ],
-            },
+            where: { userUUID: userUUID, type: fileTypeField },
         });
         if (copyOfFile) {
             unlink(storageSettings.destination + '\\' + copyOfFile.fileName);
