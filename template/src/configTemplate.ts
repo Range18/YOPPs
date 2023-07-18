@@ -19,5 +19,5 @@ export const apiServer: IApiServer = {
 export const clientServer: IClientServer = {
   port: 3000,
   host: "localhost",
-  url: `http://localhost:5000`
+  url: `http://localhost:3000`
 };

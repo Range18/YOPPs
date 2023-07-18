@@ -1,20 +1,42 @@
-.container{
-    height: 100%;
-    width: 100%;
-}
 
-.innerContainer{
-    width: 50%;
-    height: 50%;
-    margin: auto;
+.MainContainer{
+    position: relative;
+    z-index: 1;
     display: flex;
-
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20%;
+}
+body{
+    background-image: url('https://w.wallhaven.cc/full/x6/wallhaven-x6jy1v.png') ;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+.MainText{
+    font-family: 'Anton', sans-serif;
+    background: linear-gradient(140deg, rgba(0,161,238,1) 12%, rgba(0,255,179,1) 54%, rgba(0,190,101,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    font-size: 60px;
+    position: relative;
 }
 
-.MainText{
-
+.secondText{
+    font-family: 'Anton', sans-serif;
+    background: linear-gradient(140deg, rgba(0,161,238,1) 12%, rgba(0,255,179,1) 54%, rgba(0,190,101,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    font-size: 40px;
+    position: relative;
 }
 
 .createPageBtn{
-
+    border: 1px solid #202020;
+    font-size: 25px;
+    padding: 3px 14px;
+    border-radius: 10px ;
+    cursor: pointer;
 }
