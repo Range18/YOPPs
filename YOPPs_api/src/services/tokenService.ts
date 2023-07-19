@@ -1,11 +1,11 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { jwtSettings } from '../../config';
 import { Token } from '../models/Token-model';
-import { UserDto } from '../Dto/UserDto';
+import { User } from '../Dto/User';
 import { Logger } from '../logger/logger';
 
 abstract class TokenService {
-    static generateTokens(payload: UserDto) {
+    static generateTokens(payload: User) {
         const refreshToken = jwt.sign(payload, jwtSettings.secret, {expiresIn: jwtSettings.authExpires.refresh})
         const accessToken = jwt.sign(payload, jwtSettings.secret, {expiresIn: jwtSettings.authExpires.access})
 
@@ -52,10 +52,10 @@ abstract class TokenService {
     }
 
 
-    static validateToken(token: string): UserDto | null {
+    static validateToken(token: string): User | null {
         try {
-            const userData: string | UserDto | JwtPayload = jwt.verify(token, jwtSettings.secret)
-            return userData as UserDto;
+            const userData: string | User | JwtPayload = jwt.verify(token, jwtSettings.secret)
+            return userData as User;
         } catch (err) {
             Logger.log(err, 'ERROR')
             return null;

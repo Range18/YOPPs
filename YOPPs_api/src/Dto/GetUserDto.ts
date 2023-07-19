@@ -1,5 +1,5 @@
 
-export interface IUser{
+export class GetUserDto {
     UUID : string;
     username: string;
     name?: string;

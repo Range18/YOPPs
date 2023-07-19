@@ -1,6 +1,6 @@
 
 
-export interface UserDto {
+export class User {
     UUID: string;
     refreshUUID: string;
     username: string;

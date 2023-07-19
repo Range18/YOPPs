@@ -1,4 +1,4 @@
-export interface ILinks {
+export class Links {
     discord?: string;
     telegram?: string;
     vkontakte?: string;

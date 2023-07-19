@@ -1,7 +1,6 @@
 import { unlink } from 'fs/promises';
 import { createReadStream, statSync } from 'fs';
 import { Buffer } from 'buffer';
-import { IFile } from '../Dto/IFile';
 import { ApiError } from '../Errors/ApiErrors';
 import { UserPageExceptions } from '../Errors/HttpExceptionsMessages';
 import { FileModel } from '../models/File-model';
@@ -10,7 +9,6 @@ import multer, { FileFilterCallback } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import UserPageService from './userPageService';
-import { Op } from 'sequelize';
 
 
 abstract class StorageService {
@@ -71,7 +69,7 @@ abstract class StorageService {
         });
     }
 
-    static async uploadFile(fileData: Express.Multer.File | undefined, userUUID: string, fileTypeField: string): Promise<IFile> {
+    static async uploadFile(fileData: Express.Multer.File | undefined, userUUID: string, fileTypeField: string) {
         if (!fileData) throw ApiError.NotFound(UserPageExceptions.NoFile);
         const isExtAllowed = await StorageService.checkFileExtension(fileData.filename, fileData.mimetype);
         if (!isExtAllowed) {
@@ -108,16 +106,6 @@ abstract class StorageService {
                 avatarId: newFile.id,
             });
         }
-        return {
-            originalName: fileData.originalname,
-            filename: fileData.filename,
-            type: fileTypeField,
-            mimetype: fileData.mimetype,
-            encoding: fileData.encoding,
-            destination: fileData.destination,
-            path: fileData.path,
-            size: fileData.size,
-        };
     }
 
     static async deleteFile(fileName: string | null): Promise<void> {

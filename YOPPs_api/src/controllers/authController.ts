@@ -1,7 +1,7 @@
 import AuthService from '../services/authService';
 import { clientServer, jwtSettings } from '../../config';
 import { NextFunction, Request, Response } from 'express';
-import { PartialUserData } from '../entities/PartialUserData';
+import { UserDto } from '../entities/UserDto';
 
 
 abstract class AuthController {
@@ -17,7 +17,7 @@ abstract class AuthController {
                 maxAge: AuthController.maxAgeRefreshToken,
                 httpOnly: true,
             });
-            const userDataPreview: PartialUserData = {
+            const userDataPreview: UserDto = {
                 accessToken: userData.accessToken,
                 user: userData.user,
             };
@@ -37,7 +37,7 @@ abstract class AuthController {
                 maxAge: AuthController.maxAgeRefreshToken,
                 httpOnly: true,
             });
-            const userDataPreview: PartialUserData = {
+            const userDataPreview: UserDto = {
                 accessToken: userData.accessToken,
                 user: userData.user,
             };
@@ -70,7 +70,7 @@ abstract class AuthController {
                 maxAge: AuthController.maxAgeRefreshToken,
                 httpOnly: true,
             });
-            const userDataPreview: PartialUserData = {
+            const userDataPreview: UserDto = {
                 accessToken: userData.accessToken,
                 user: userData.user,
             };

@@ -3,7 +3,6 @@ YOPPs_api/.env
 
 #production
 /YOPPs_api/build/
-/YOPPs_api/src/storage/
 /YOPPs_api/storage/
 
 

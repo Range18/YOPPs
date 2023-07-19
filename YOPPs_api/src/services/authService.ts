@@ -8,16 +8,16 @@ import { apiServer, bcryptSalt, PWDCodeExpireIn } from '../../config';
 import MailService from './mailService';
 import TokenService from './tokenService';
 import { UserPageModel } from '../models/UserPage-model';
-import { UserDto } from '../Dto/UserDto';
+import { User } from '../Dto/User';
 import { AuthExceptions, TokenExceptions } from '../Errors/HttpExceptionsMessages';
-import { IUserData } from '../entities/IUserData';
+import { UserData } from '../entities/UserData';
 import { ActivationLinksModel } from '../models/ActivationLinksModel';
 import { PWDResetCodeModel } from '../models/PWDResetCode-model';
 import { MailDto } from '../Dto/MailDto';
 
 
 abstract class AuthService {
-    static async registration(username: string, email: string, password: string): Promise<IUserData> {
+    static async registration(username: string, email: string, password: string): Promise<UserData> {
         const candidate: UserModel | null = await UserModel.findOne({ where: { email } });
         if (candidate) throw ApiError.BadRequest(AuthExceptions.UserAlreadyExists);
 
@@ -30,7 +30,7 @@ abstract class AuthService {
 
         UserPageModel.create({ userUUID: user.UUID });
 
-        const userDto: UserDto = {
+        const userDto: User = {
             UUID: user.UUID,
             username: user.username,
             refreshUUID: uuidv4(),
@@ -61,13 +61,13 @@ abstract class AuthService {
         await user.save();
     }
 
-    static async login(email: string, password: string): Promise<IUserData> {
+    static async login(email: string, password: string): Promise<UserData> {
         const user = await UserModel.findOne({ where: { email } });
         if (!user) throw ApiError.BadRequest(AuthExceptions.UserNotFound);
 
         const isPassEquals = await bcrypt.compare(password, user.password);
         if (!isPassEquals) throw ApiError.BadRequest(AuthExceptions.WrongPassword);
-        const userDto: UserDto = {
+        const userDto: User = {
             UUID: user.dataValues.UUID,
             username: user.dataValues.username,
             refreshUUID: uuidv4(),
@@ -79,7 +79,7 @@ abstract class AuthService {
         return { ...tokens, user: userDto };
     }
 
-    static async refresh(refreshToken: string): Promise<IUserData> {
+    static async refresh(refreshToken: string): Promise<UserData> {
         if (!refreshToken) throw ApiError.UnauthorizedError(TokenExceptions.InvalidToken);
         const userData = TokenService.validateToken(refreshToken);
         if (!userData) throw ApiError.UnauthorizedError(TokenExceptions.InvalidToken);
@@ -88,7 +88,7 @@ abstract class AuthService {
         if (!tokenFromDB) throw ApiError.UnauthorizedError(TokenExceptions.InvalidToken);
 
         const user = await UserModel.findOne({ where: { UUID: userData.UUID } });
-        const userDto: UserDto = {
+        const userDto: User = {
             UUID: user?.dataValues.UUID,
             username: user?.dataValues.username,
             refreshUUID: uuidv4(),
@@ -134,7 +134,7 @@ abstract class AuthService {
         await user.save();
     }
 
-    static async resendActivateEmail(email: string, userData: UserDto) {
+    static async resendActivateEmail(email: string, userData: User) {
         await ActivationLinksModel.destroy({where:{userUUID: userData.UUID}})
         const activateObj =  await ActivationLinksModel.create({
             userUUID: userData.UUID,
