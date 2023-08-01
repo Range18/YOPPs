@@ -8,4 +8,5 @@ YOPPs_api/.env
 
 #depencies
 /YOPPs_api/node_modules/
-
+/YOPPs_api/package-lock.json
+template/package-lock.json
