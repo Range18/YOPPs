@@ -1,5 +1,5 @@
 import AuthService from '../services/authService';
-import { clientServer, jwtSettings } from '../../config';
+import { clientServer, jwtSettings } from '../config';
 import { NextFunction, Request, Response } from 'express';
 import { UserDto } from '../entities/UserDto';
 

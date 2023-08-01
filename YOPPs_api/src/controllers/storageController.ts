@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import StorageService from '../services/storageService';
-import { storageSettings } from '../../config';
+import { storageSettings } from '../config';
 import { User } from '../Dto/User';
 
 

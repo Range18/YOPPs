@@ -4,7 +4,7 @@ import { Buffer } from 'buffer';
 import { ApiError } from '../Errors/ApiErrors';
 import { UserPageExceptions } from '../Errors/HttpExceptionsMessages';
 import { FileModel } from '../models/File-model';
-import { storageSettings } from '../../config';
+import { storageSettings } from '../config';
 import multer, { FileFilterCallback } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';

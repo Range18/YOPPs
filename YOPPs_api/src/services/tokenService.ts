@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { jwtSettings } from '../../config';
+import { jwtSettings } from '../config';
 import { Token } from '../models/Token-model';
 import { User } from '../Dto/User';
 import { Logger } from '../logger/logger';

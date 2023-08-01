@@ -1,5 +1,8 @@
 import {DataTypes, Model} from "sequelize";
-import {dbContext} from "../dbController/dbConnect";
+import { dbContext } from '../dbController/database.controller';
+
+
+
 
 
 export class Token extends Model {

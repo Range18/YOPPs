@@ -1,8 +1,10 @@
-import {CreateOptions, DataTypes, Model, UUID} from "sequelize";
-import {dbContext} from "../dbController/dbConnect";
+import {DataTypes, Model } from "sequelize";
 import {UserPageModel} from "./UserPage-model";
 import {Token} from "./Token-model";
-import {HookReturn} from "sequelize/types/hooks";
+import { dbContext } from '../dbController/database.controller';
+
+
+
 
 
 export class UserModel extends Model {

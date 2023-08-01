@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import { BOOLEAN } from 'sequelize';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ interface IDatabase {
     password: string;
     dbName: string;
     timezone: string;
+    dropDB: boolean;
 }
 
 interface IJwtSettings {
@@ -68,6 +70,7 @@ export const database: Readonly<IDatabase> = {
     password: process.env.DATABASE_PASSWORD as string,
     dbName: process.env.DATABASE_NAME as string,
     timezone: process.env.DATABASE_TIMEZONE as string,
+    dropDB: Boolean(process.env.DROP_DB) as boolean,
 };
 export const storageSettings: Readonly<IStorageSettings> = {
     destination: process.env.STORAGE_PATH as string,

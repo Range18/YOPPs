@@ -1,6 +1,7 @@
 import {DataTypes, Model} from "sequelize";
-import {dbContext} from "../dbController/dbConnect";
 import { FileModel } from './File-model';
+import { dbContext } from '../dbController/database.controller';
+
 
 
 export class UserPageModel extends Model {

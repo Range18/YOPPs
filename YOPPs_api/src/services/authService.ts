@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { UserModel } from '../models/User-model';
 import { ApiError } from '../Errors/ApiErrors';
-import { apiServer, bcryptSalt, PWDCodeExpireIn } from '../../config';
+import { apiServer, bcryptSalt, PWDCodeExpireIn } from '../config';
 
 import MailService from './mailService';
 import TokenService from './tokenService';
