@@ -1,7 +1,7 @@
 import { UserModel } from '../models/User-model';
 import { ApiError } from '../Errors/ApiErrors';
 import { UserPageModel } from '../models/UserPage-model';
-import { GetPageDto } from '../Dto/GetPageDto';
+import { GetPageRdo } from '../Dto/GetPageRdo';
 import { AuthExceptions, UserPageExceptions } from '../Errors/HttpExceptionsMessages';
 import { Op } from 'sequelize';
 import StorageService from './storageService';
@@ -19,7 +19,7 @@ abstract class UserPageService {
         });
     }
 
-    static async getPageData(usernameOrUUID: string): Promise<GetPageDto> {
+    static async getPageData(usernameOrUUID: string): Promise<GetPageRdo> {
         const user = await UserModel.findOne({
             where: {
                 [Op.or]: [
@@ -46,7 +46,7 @@ abstract class UserPageService {
         };
     }
 
-    static async saveUserPage(userPageData: GetPageDto): Promise<GetPageDto> {
+    static async saveUserPage(userPageData: GetPageRdo): Promise<GetPageRdo> {
         const currentPage = await UserPageModel.findOne({ where: { userUUID: userPageData.userData.UUID } });
         const user = await UserModel.findOne({ where: { UUID: userPageData.userData.UUID } });
         if (!currentPage || !user) throw ApiError.NotFound(UserPageExceptions.PageNotFound);

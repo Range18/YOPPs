@@ -6,7 +6,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 
 const userRouter: IRouter = Router();
 
-userRouter.post('/save', authMiddleware, activatedMiddleware, activatedMiddleware, UserPageController.savePage);
+userRouter.post('/save', authMiddleware, activatedMiddleware, UserPageController.savePage);
 userRouter.get('/get/:usernameOrUUID', UserPageController.getPage);
 
 

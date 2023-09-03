@@ -18,27 +18,27 @@ import { MailDto } from '../Dto/MailDto';
 
 abstract class AuthService {
     static async registration(username: string, email: string, password: string): Promise<UserData> {
-        const candidate: UserModel | null = await UserModel.findOne({ where: { email } });
-        if (candidate) throw ApiError.BadRequest(AuthExceptions.UserAlreadyExists);
+        const user: UserModel | null = await UserModel.findOne({ where: { email } });
+        if (user) throw ApiError.BadRequest(AuthExceptions.UserAlreadyExists);
 
         const hashPassword = bcrypt.hashSync(password, bcryptSalt);
-        const user: UserModel = await UserModel.create({
+        const userEntity: UserModel = await UserModel.create({
             username,
             email,
             password: hashPassword,
         });
 
-        UserPageModel.create({ userUUID: user.UUID });
+        UserPageModel.create({ userUUID: userEntity.UUID });
 
         const userDto: User = {
-            UUID: user.UUID,
-            username: user.username,
+            UUID: userEntity.UUID,
+            username: userEntity.username,
             refreshUUID: uuidv4(),
-            isActivated: user.isActivated,
+            isActivated: userEntity.isActivated,
         };
         const activationCode: string = uuidv4();
         await ActivationLinksModel.create({
-            userUUID: user.UUID,
+            userUUID: userEntity.UUID,
             linkCode: activationCode,
         });
         const link = `${apiServer.url}/auth/activate/${activationCode}`;

@@ -1,5 +1,5 @@
 
-export class GetUserDto {
+export class GetUserRdo {
     UUID : string;
     username: string;
     name?: string;

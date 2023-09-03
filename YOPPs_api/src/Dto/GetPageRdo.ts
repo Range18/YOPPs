@@ -1,8 +1,8 @@
-import {GetUserDto} from "./GetUserDto";
+import {GetUserRdo} from "./GetUserRdo";
 import {Links} from "../entities/Links";
 
-export class GetPageDto {
-    userData: GetUserDto;
+export class GetPageRdo {
+    userData: GetUserRdo;
     description?: string;
     contactEmail?: string;
     socialLinks?: Links;
