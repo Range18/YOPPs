@@ -1,6 +1,7 @@
-import { Logger } from '../logger/logger';
+
 import { Options, Sequelize, SyncOptions } from 'sequelize';
 import { database } from '../config';
+import {logger} from "../index";
 export const dbContext: Sequelize = new Sequelize(database.dbName, database.user, database.password,
   {
       host: database.host,
@@ -36,16 +37,16 @@ export class DatabaseController {
         try {
             await this.dataSource.sync()
         } catch (err) {
-            Logger.log(err,'ERROR')
+            logger.error(err)
         }
     }
 
     async connect (): Promise<void> {
         try {
             await this.dataSource.authenticate()
-            Logger.log('Database is running')
+            logger.info('Database is running')
         } catch (err) {
-            Logger.log(err, 'ERROR')
+            logger.error(err)
         }
     }
 }

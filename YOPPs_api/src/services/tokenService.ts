@@ -3,6 +3,7 @@ import { jwtSettings } from '../config';
 import { Token } from '../models/Token-model';
 import { User } from '../Dto/User';
 import { Logger } from '../logger/logger';
+import {logger} from "../index";
 
 abstract class TokenService {
     static generateTokens(payload: User) {
@@ -28,7 +29,7 @@ abstract class TokenService {
                 expireIn: Date.now() + maxAgeRefreshToken
             })
         } catch (err) {
-            Logger.log(err, 'ERROR')
+            logger.error(err)
             return null
         }
     }
@@ -38,7 +39,7 @@ abstract class TokenService {
             const tokenPayload = this.validateToken(token)
             await Token.destroy({where:{UUID: tokenPayload?.refreshUUID}})
         } catch (err) {
-            Logger.log(err, 'ERROR')
+            logger.error(err)
         }
     }
 
@@ -46,7 +47,7 @@ abstract class TokenService {
         try {
             return await Token.findOne({ where: { UUID } });
         } catch (err) {
-            Logger.log(err, 'ERROR')
+            logger.error(err)
             return null;
         }
     }
@@ -57,7 +58,7 @@ abstract class TokenService {
             const userData: string | User | JwtPayload = jwt.verify(token, jwtSettings.secret)
             return userData as User;
         } catch (err) {
-            Logger.log(err, 'ERROR')
+            logger.error(err)
             return null;
         }
     }

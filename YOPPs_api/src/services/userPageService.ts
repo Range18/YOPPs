@@ -48,7 +48,9 @@ abstract class UserPageService {
 
     static async saveUserPage(userPageData: GetPageRdo): Promise<GetPageRdo> {
         const currentPage = await UserPageModel.findOne({ where: { userUUID: userPageData.userData.UUID } });
+
         const user = await UserModel.findOne({ where: { UUID: userPageData.userData.UUID } });
+
         if (!currentPage || !user) throw ApiError.NotFound(UserPageExceptions.PageNotFound);
 
         await currentPage.update({

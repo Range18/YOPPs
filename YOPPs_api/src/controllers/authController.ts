@@ -17,10 +17,12 @@ abstract class AuthController {
                 maxAge: AuthController.maxAgeRefreshToken,
                 httpOnly: true,
             });
+
             const userDataPreview: UserDto = {
                 accessToken: userData.accessToken,
                 user: userData.user,
             };
+
             res.status(201).json(userDataPreview);
             next();
         } catch (err) {
@@ -37,10 +39,12 @@ abstract class AuthController {
                 maxAge: AuthController.maxAgeRefreshToken,
                 httpOnly: true,
             });
+
             const userDataPreview: UserDto = {
                 accessToken: userData.accessToken,
                 user: userData.user,
             };
+
             res.status(201).json(userDataPreview);
             next();
         } catch (err) {

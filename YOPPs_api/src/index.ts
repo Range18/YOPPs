@@ -13,9 +13,11 @@ import { DatabaseController, dbContext } from './dbController/database.controlle
 
 export const dataSource = new DatabaseController(dbContext)
 export const app = Express();
+export const logger = new Logger()
 const bootstrap = async () => {
     try {
-        Logger.log('Prepare server start...', 'INFO');
+
+        logger.info('Prepare server start...');
 
         app.use(Express.json());
         app.use(Express.urlencoded({ extended: true }));
@@ -30,12 +32,12 @@ const bootstrap = async () => {
         app.use('/userPage', userRouter);
 
         app.use(errorMiddleware);
-        app.use(Logger.loggerMiddleware)
+        app.use(logger.loggerMiddleware)
 
         await dataSource.connect()
         await dataSource.sync({force: database.dropDB})
 
-        app.listen(apiServer.port, () => Logger.log(`Server is started at http://${apiServer.host}:${apiServer.port}`, 'INFO'));
+        app.listen(apiServer.port, () => logger.info(`Server is started at http://${apiServer.host}:${apiServer.port}`));
 
     } catch (err) {
         console.log(err);
