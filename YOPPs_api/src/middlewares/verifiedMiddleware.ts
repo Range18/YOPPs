@@ -6,7 +6,7 @@ import {User} from "../Dto/User";
 export async function activatedMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
         const userData: User = req['user']
-        if (!userData.isActivated) return next(ApiError.Forbidden((AuthExceptions.NotActivated)));
+        if (!userData.isActivated) return next(new ApiError(403, AuthExceptions.NotActivated));
         next();
     } catch (err) {
         return next(ApiError.UnauthorizedError());
