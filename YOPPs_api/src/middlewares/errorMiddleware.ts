@@ -1,13 +1,20 @@
 import { ApiError } from '../Errors/ApiErrors';
-import { NextFunction, Request, Response } from 'express';
-import {logger} from "../index";
+import { logger } from '../main';
+import { Request, Response } from 'express';
 
-export const errorMiddleware = function(err: ApiError | any, req: Request, res: Response, next: NextFunction) {
+export const errorMiddleware = function (
+  err: ApiError | unknown,
+  req: Request,
+  res: Response,
+) {
+  if (err instanceof ApiError) {
+    logger.error(err.message, req.url, err.status ?? 500, err.errors);
+    return res
+      .status(err.status)
+      .json({ message: err.message, errors: err.errors });
+  } else {
     console.log(err);
+  }
 
-    logger.error(err.message, req.url , err.status ?? 500,  err.errors)
-
-    if (err instanceof ApiError) return res.status(err.status).json({ message: err.message, errors: err.errors });
-
-    return res.status(500).json({ message: 'Unexpected Error' });
+  return res.status(500).json({ message: 'Unexpected Error' });
 };

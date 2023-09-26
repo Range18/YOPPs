@@ -1,8 +1,6 @@
-
-
 export class User {
-    UUID: string;
-    refreshUUID: string;
-    username: string;
-    isActivated: boolean;
+  UUID: string;
+  refreshUUID: string;
+  username: string;
+  isActivated: boolean;
 }

@@ -1,8 +1,7 @@
-import {User} from "../Dto/User";
-
+import { User } from '../Dto/User';
 
 export class UserData {
-    refreshToken: string;
-    accessToken: string;
-    user: User
+  refreshToken: string;
+  accessToken: string;
+  user: User;
 }

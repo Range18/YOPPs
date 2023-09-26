@@ -1,3 +1,3 @@
-import {UserData} from "./UserData";
+import { UserData } from './UserData';
 
-export type UserDto = Pick<UserData, 'accessToken' | 'user'>
+export type UserDto = Pick<UserData, 'accessToken' | 'user'>;

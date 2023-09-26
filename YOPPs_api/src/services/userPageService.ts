@@ -1,72 +1,82 @@
+import StorageService from './storageService';
 import { UserModel } from '../models/User-model';
 import { ApiError } from '../Errors/ApiErrors';
 import { UserPageModel } from '../models/UserPage-model';
 import { GetPageRdo } from '../Dto/GetPageRdo';
-import { AuthExceptions, UserPageExceptions } from '../Errors/HttpExceptionsMessages';
+import {
+  AuthExceptions,
+  UserPageExceptions,
+} from '../Errors/HttpExceptionsMessages';
 import { Op } from 'sequelize';
-import StorageService from './storageService';
-
 
 abstract class UserPageService {
-    static async getPage(usernameOrUUID: string): Promise<UserPageModel | null> {
-        return await UserPageModel.findOne({
-            where: {
-                [Op.or]: [
-                    { userUUID: usernameOrUUID },
-                    { userUUID: (await UserModel.findOne({ where: { username: usernameOrUUID } }))?.UUID ?? null },
-                ],
-            },
-        });
-    }
+  static async getPage(usernameOrUUID: string): Promise<UserPageModel | null> {
+    return await UserPageModel.findOne({
+      where: {
+        [Op.or]: [
+          { userUUID: usernameOrUUID },
+          {
+            userUUID:
+              (await UserModel.findOne({ where: { username: usernameOrUUID } }))
+                ?.UUID ?? null,
+          },
+        ],
+      },
+    });
+  }
 
-    static async getPageData(usernameOrUUID: string): Promise<GetPageRdo> {
-        const user = await UserModel.findOne({
-            where: {
-                [Op.or]: [
-                    { UUID: usernameOrUUID },
-                    { username: usernameOrUUID },
-                ],
-            },
-        });
-        if (!user) throw ApiError.NotFound(AuthExceptions.UserNotFound);
+  static async getPageData(usernameOrUUID: string): Promise<GetPageRdo> {
+    const user = await UserModel.findOne({
+      where: {
+        [Op.or]: [{ UUID: usernameOrUUID }, { username: usernameOrUUID }],
+      },
+    });
+    if (!user) throw ApiError.NotFound(AuthExceptions.UserNotFound);
 
-        const userPage = await UserPageModel.findOne({ where: { userUUID: user.UUID } });
-        if (!userPage) throw ApiError.NotFound(UserPageExceptions.ImgNotFound);
-        return {
-            userData: {
-                UUID: user.UUID,
-                username: user.username,
-                name: user.name,
-                surname: user.surname,
-                age: user.age,
-            },
-            description: userPage.description,
-            socialLinks: JSON.parse(userPage.socialLinks),
-            contactEmail: userPage.contactEmail,
-        };
-    }
+    const userPage = await UserPageModel.findOne({
+      where: { userUUID: user.UUID },
+    });
+    if (!userPage) throw ApiError.NotFound(UserPageExceptions.ImgNotFound);
+    return {
+      userData: {
+        UUID: user.UUID,
+        username: user.username,
+        name: user.name,
+        surname: user.surname,
+        age: user.age,
+      },
+      description: userPage.description,
+      socialLinks: JSON.parse(userPage.socialLinks),
+      contactEmail: userPage.contactEmail,
+    };
+  }
 
-    static async saveUserPage(userPageData: GetPageRdo): Promise<GetPageRdo> {
-        const currentPage = await UserPageModel.findOne({ where: { userUUID: userPageData.userData.UUID } });
+  static async saveUserPage(userPageData: GetPageRdo): Promise<GetPageRdo> {
+    const currentPage = await UserPageModel.findOne({
+      where: { userUUID: userPageData.userData.UUID },
+    });
 
-        const user = await UserModel.findOne({ where: { UUID: userPageData.userData.UUID } });
+    const user = await UserModel.findOne({
+      where: { UUID: userPageData.userData.UUID },
+    });
 
-        if (!currentPage || !user) throw ApiError.NotFound(UserPageExceptions.PageNotFound);
+    if (!currentPage || !user)
+      throw ApiError.NotFound(UserPageExceptions.PageNotFound);
 
-        await currentPage.update({
-            description: userPageData.description,
-            socialLinks: JSON.stringify(userPageData.socialLinks),
-            contactEmail: userPageData.contactEmail,
-        });
-        await user.update({
-            username: userPageData.userData.username,
-            name: userPageData.userData.name,
-            surname: userPageData.userData.surname,
-            age: userPageData.userData.age,
-        });
+    await currentPage.update({
+      description: userPageData.description,
+      socialLinks: JSON.stringify(userPageData.socialLinks),
+      contactEmail: userPageData.contactEmail,
+    });
+    await user.update({
+      username: userPageData.userData.username,
+      name: userPageData.userData.name,
+      surname: userPageData.userData.surname,
+      age: userPageData.userData.age,
+    });
 
-        return userPageData;
-    }
+    return userPageData;
+  }
 }
 
 export default UserPageService;
