@@ -1,5 +1,6 @@
 import { UserPageModel } from './UserPage-model';
-import { GetPageRdo } from './get-page.rdo';
+import { GetPageRdo } from './dto/get-page.rdo';
+import { SavePageDto } from './dto/save-page.dto';
 import StorageService from '../storage/storage.service';
 import { UserModel } from '../user/User-model';
 import { ApiError } from '../Errors/ApiErrors';
@@ -51,13 +52,16 @@ abstract class UserPageService {
     };
   }
 
-  static async saveUserPage(userPageData: GetPageRdo): Promise<GetPageRdo> {
+  static async saveUserPage(
+    UUID: string,
+    userPageData: SavePageDto,
+  ): Promise<void> {
     const currentPage = await UserPageModel.findOne({
-      where: { userUUID: userPageData.userData.UUID },
+      where: { userUUID: UUID },
     });
 
     const user = await UserModel.findOne({
-      where: { UUID: userPageData.userData.UUID },
+      where: { UUID: UUID },
     });
 
     if (!currentPage || !user)
@@ -74,8 +78,6 @@ abstract class UserPageService {
       surname: userPageData.userData.surname,
       age: userPageData.userData.age,
     });
-
-    return userPageData;
   }
 }
 

@@ -15,7 +15,7 @@ import Express from 'express';
 
 export const dataSource = new DatabaseController(dbContext);
 export const app = Express();
-export const logger = new Logger();
+export const logger = new Logger('HTTP');
 const bootstrap = async () => {
   try {
     logger.info('Prepare server start...');
@@ -28,6 +28,7 @@ const bootstrap = async () => {
         fileFilter: StorageService.fileFilter,
       }).single('file'),
     );
+
     app.use(
       cors({
         credentials: true,

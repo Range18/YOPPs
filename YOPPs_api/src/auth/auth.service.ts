@@ -5,12 +5,12 @@ import { ApiError } from '../Errors/ApiErrors';
 import { apiServer, bcryptSalt, PWDCodeExpireIn } from '../config';
 
 import { UserPageModel } from '../page/UserPage-model';
-import { UserPayload } from '../user/user-payload';
+import { UserPayload } from '../user/types/user-payload';
 import {
   AuthExceptions,
   TokenExceptions,
 } from '../Errors/HttpExceptionsMessages';
-import { UserData } from '../user/user-data';
+import { UserData } from '../user/types/user-data';
 import { ActivationLinksModel } from '../mail/activation-links.model';
 import { PassResetModel } from '../mail/pass-reset.model';
 import { MailDto } from '../mail/MailDto';

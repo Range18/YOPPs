@@ -15,7 +15,7 @@ authRoute.post(
   AuthController.resendActivateEmail,
 );
 
-authRoute.post('/refresh', authMiddleware, AuthController.refresh);
+authRoute.post('/refresh', AuthController.refresh);
 
 authRoute.delete('/logout', AuthController.logout);
 

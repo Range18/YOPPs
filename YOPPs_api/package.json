@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --outDir build",
     "start:dev": "npx nodemon ./src/main.ts",
-    "start": "tsc --outDir build && node build/index.js",
+    "start": "tsc --outDir build && node build/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
   },
   "keywords": [],

@@ -1,5 +1,5 @@
 import { jwtSettings } from '../config';
-import { UserPayload } from '../user/user-payload';
+import { UserPayload } from '../user/types/user-payload';
 import { logger } from '../main';
 import jwt from 'jsonwebtoken';
 

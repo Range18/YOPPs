@@ -1,9 +1,9 @@
 import { ApiError } from '../Errors/ApiErrors';
 import TokenService from '../session/tokenService';
-import { UserPayload } from '../user/user-payload';
+import { UserPayload } from '../user/types/user-payload';
 import { TokenExceptions } from '../Errors/HttpExceptionsMessages';
 import { UserModel } from '../user/User-model';
-import { type UserIntercepted } from '../user/user-intercepted';
+import { type UserIntercepted } from '../user/types/user-intercepted';
 import { NextFunction, Request, Response } from 'express';
 
 export async function authMiddleware(

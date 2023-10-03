@@ -1,24 +1,25 @@
-import { NextFunction, Request, Response } from 'express';
+import { Color } from './color.type';
+import { Request, Response } from 'express';
 
-/*TODO:
-make deep debug mode when res.body is shown
-*/
 type LogType = 'LOG' | 'INFO' | 'WARN' | 'ERROR';
+
+//TODO add prefixes (in loggerMiddleware)
 
 export class Logger {
   constructor(private readonly prefix?: string) {}
-  loggerMiddleware(req: Request, res: Response, next: NextFunction) {
-    res.on('finish', () =>
+
+  public loggerMiddleware(req: Request, res: Response) {
+    res.on('finish', function () {
       console.log(
-        '\x1b[32m[Server] -',
-        this.getDateNow(),
-        '\x1b[38;5;11m[LOG]',
-        `\x1b[38;5;5m${req.method}`,
-        `\x1b[32m${req.url}`,
+        `${Logger.getColor('green')}[Server] -`,
+        Logger.getDateNow(),
+        `${Logger.getColor('gold')}[LOG]`,
+        `${Logger.getColor('purple')}${req.method}`,
+        `${Logger.getColor('green')}${req.url}`,
         res.statusCode,
-        '\x1b[38;5;15m',
-      ),
-    );
+        Logger.getColor('white'),
+      );
+    });
   }
 
   info(message: string, reqLink?: string, resStatus?: number, errors?: any[]) {
@@ -46,40 +47,61 @@ export class Logger {
   ) {
     if (reqLink || resStatus) {
       console.log(
-        '\x1b[32m[Server] -',
-        this.getDateNow(),
+        `${Logger.getColor('green')}[Server] -`,
+        Logger.getDateNow(),
         `${this.getLogTypeColor(type)}[${type}]`,
-        `\x1b[32m${reqLink}`,
+        `${Logger.getColor('green')}${reqLink}`,
         resStatus,
-        `\x1b[32m${message}`,
+        `${Logger.getColor('green')}${message}`,
         `${errors}`,
-        '\x1b[38;5;15m',
+        Logger.getColor('white'),
       );
     } else {
       console.log(
-        '\x1b[32m[Server] -',
-        this.getDateNow(),
+        `${Logger.getColor('green')}[Server] -`,
+        Logger.getDateNow(),
         `${this.getLogTypeColor(type)}[${type}]`,
-        `\x1b[32m${message}`,
+        `${Logger.getColor('green')}${message}`,
         `${errors ?? ''}`,
-        '\x1b[38;5;15m',
+        Logger.getColor('white'),
       );
     }
   }
 
-  private getDateNow(): string {
-    return `\x1b[38;5;140m${new Date(Date.now())
+  private static getDateNow(): string {
+    return `${Logger.getColor('purple')}${new Date(Date.now())
       .toLocaleString()
       .replace(',', '')}`;
   }
 
   private getLogTypeColor(type: LogType) {
     return type == 'LOG'
-      ? '\x1b[38;5;11m'
+      ? Logger.getColor('gold')
       : type == 'INFO'
-      ? '\x1b[36m'
+      ? Logger.getColor('cyan')
       : type == 'WARN'
-      ? '\x1b[38;5;209m'
-      : '\x1b[31m';
+      ? Logger.getColor('orange')
+      : Logger.getColor('red');
+  }
+
+  private static getColor(color: keyof typeof Color): string {
+    switch (color) {
+      case 'green':
+        return '\x1b[32m';
+      case 'red':
+        return '\x1b[31m';
+      case 'purple':
+        return '\x1b[38;5;140m';
+      case 'gold':
+        return '\x1b[38;5;11m';
+      case 'orange':
+        return "\x1b[38;5;209m'";
+      case 'cyan':
+        return '\x1b[36m';
+
+      case 'white':
+      default:
+        return '\x1b[38;5;15m';
+    }
   }
 }

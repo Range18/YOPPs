@@ -2,7 +2,7 @@ import { Sessions } from './session.model';
 import TokenService from './tokenService';
 import { jwtSettings } from '../config';
 import { logger } from '../main';
-import { UserPayload } from '../user/user-payload';
+import { UserPayload } from '../user/types/user-payload';
 
 export abstract class SessionService {
   static async create(

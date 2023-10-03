@@ -1,7 +1,7 @@
 import { ApiError } from '../Errors/ApiErrors';
 import { AuthExceptions } from '../Errors/HttpExceptionsMessages';
-import { UserIntercepted } from '../user/user-intercepted';
-import { UserPayload } from '../user/user-payload';
+import { UserIntercepted } from '../user/types/user-intercepted';
+import { UserPayload } from '../user/types/user-payload';
 import { NextFunction, Request, Response } from 'express';
 
 export async function VerifiedMiddleware(

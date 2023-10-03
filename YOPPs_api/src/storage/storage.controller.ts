@@ -1,6 +1,6 @@
 import StorageService from './storage.service';
 import { storageSettings } from '../config';
-import { UserPayload } from '../user/user-payload';
+import { UserPayload } from '../user/types/user-payload';
 import { NextFunction, Request, Response } from 'express';
 
 abstract class StorageController {

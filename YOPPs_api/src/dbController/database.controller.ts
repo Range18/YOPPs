@@ -1,6 +1,7 @@
 import { database } from '../config';
 import { logger } from '../main';
 import { Options, Sequelize, SyncOptions } from 'sequelize';
+
 export const dbContext: Sequelize = new Sequelize(
   database.dbName,
   database.user,
@@ -12,6 +13,7 @@ export const dbContext: Sequelize = new Sequelize(
     timezone: database.timezone,
   },
 );
+
 export interface DatabaseOptions {
   database: string;
   username: string;

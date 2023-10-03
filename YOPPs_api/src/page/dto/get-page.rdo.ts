@@ -1,5 +1,5 @@
-import { Links } from './links.type';
-import { GetUserRdo } from '../user/get-user.rdo';
+import { Links } from '../links.type';
+import { GetUserRdo } from '../../user/dto/get-user.rdo';
 
 export class GetPageRdo {
   userData: GetUserRdo;

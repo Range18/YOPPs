@@ -12,7 +12,7 @@ userRouter.post(
   VerifiedMiddleware,
   UserPageController.savePage,
 );
-userRouter.get('/get/:usernameOrUUID', UserPageController.getPage);
+userRouter.get('/:usernameOrUUID', UserPageController.getPage);
 
 userRouter.post(
   '/save/assets/avatar',
@@ -20,10 +20,8 @@ userRouter.post(
   VerifiedMiddleware,
   storageController.uploadFile,
 );
-userRouter.get(
-  '/get/assets/avatar/:usernameOrUUID',
-  storageController.getAvatar,
-);
+userRouter.get('/assets/avatar/:usernameOrUUID', storageController.getAvatar);
+
 userRouter.delete(
   '/delete/assets/userAvatar',
   authMiddleware,
