@@ -38,7 +38,7 @@ export class DatabaseController {
 
   async sync(options?: SyncOptions): Promise<void> {
     try {
-      await this.dataSource.sync();
+      await this.dataSource.sync(options);
     } catch (err) {
       logger.error(err);
     }

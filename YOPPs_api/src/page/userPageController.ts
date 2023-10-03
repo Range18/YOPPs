@@ -1,4 +1,4 @@
-import UserPageService from '../services/userPageService';
+import UserPageService from './userPageService';
 import { NextFunction, Request, Response } from 'express';
 
 abstract class UserPageController {

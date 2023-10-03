@@ -1,8 +1,8 @@
-import StorageService from './storageService';
-import { UserModel } from '../models/User-model';
+import { UserPageModel } from './UserPage-model';
+import { GetPageRdo } from './get-page.rdo';
+import StorageService from '../storage/storage.service';
+import { UserModel } from '../user/User-model';
 import { ApiError } from '../Errors/ApiErrors';
-import { UserPageModel } from '../models/UserPage-model';
-import { GetPageRdo } from '../Dto/GetPageRdo';
 import {
   AuthExceptions,
   UserPageExceptions,

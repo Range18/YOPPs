@@ -1,13 +1,13 @@
-import StorageService from '../services/storageService';
+import StorageService from './storage.service';
 import { storageSettings } from '../config';
-import { User } from '../Dto/User';
+import { UserPayload } from '../user/user-payload';
 import { NextFunction, Request, Response } from 'express';
 
 abstract class StorageController {
   static async uploadFile(req: Request, res: Response, next: NextFunction) {
     try {
       const file = req.file;
-      const user: User = req['user'];
+      const user: UserPayload = req['user'];
       await StorageService.uploadFile(file, user.UUID, 'avatar');
       res.status(201).json({ message: 'OK' });
       next();
@@ -35,7 +35,7 @@ abstract class StorageController {
 
   static async removeAvatar(req: Request, res: Response, next: NextFunction) {
     try {
-      const user: User = req['user'];
+      const user: UserPayload = req['user'];
       const fileName = await StorageService.getFileName(user.UUID);
       await StorageService.deleteFile(fileName);
       res.status(204).json({ message: 'OK' });

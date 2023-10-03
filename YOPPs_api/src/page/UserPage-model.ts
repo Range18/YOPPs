@@ -1,4 +1,4 @@
-import { FileModel } from './File-model';
+import { FileModel } from '../storage/File.model';
 import { dbContext } from '../dbController/database.controller';
 import { DataTypes, Model } from 'sequelize';
 

@@ -1,32 +1,37 @@
 import { dbContext } from '../dbController/database.controller';
 import { DataTypes, Model } from 'sequelize';
 
-export class PWDResetCodeModel extends Model {
+export class FileModel extends Model {
   declare id: number;
   declare userUUID: string;
-  declare code: string;
-  declare expireIn: string;
+  declare fileName: string;
+  declare type: 'avatar' | 'background';
+  declare size: number;
 }
 
-PWDResetCodeModel.init(
+FileModel.init(
   {
     userUUID: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    code: {
-      type: DataTypes.UUID,
+    fileName: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
-    expireIn: {
-      type: DataTypes.DATE,
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    size: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },
   {
-    tableName: 'PWDResetCodes',
+    tableName: 'files',
     createdAt: true,
-    updatedAt: false,
+    updatedAt: true,
     sequelize: dbContext,
   },
 );

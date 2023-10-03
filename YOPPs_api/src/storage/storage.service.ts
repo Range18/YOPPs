@@ -1,7 +1,7 @@
-import UserPageService from './userPageService';
+import { FileModel } from './File.model';
+import UserPageService from '../page/userPageService';
 import { ApiError } from '../Errors/ApiErrors';
 import { UserPageExceptions } from '../Errors/HttpExceptionsMessages';
-import { FileModel } from '../models/File-model';
 import { storageSettings } from '../config';
 import multer, { FileFilterCallback } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
@@ -70,6 +70,7 @@ abstract class StorageService {
 
   static async getFile(fileName: string | null): Promise<Buffer> {
     fileName = fileName ?? storageSettings.defaultAvatar;
+
     const readableStream = createReadStream(
       storageSettings.destination + '\\' + fileName,
     );
@@ -79,6 +80,7 @@ abstract class StorageService {
       readableStream.on('data', (chunk) => {
         chunks.push(chunk);
       });
+
       readableStream.on('end', () => {
         resolve(Buffer.concat(chunks));
       });
@@ -91,16 +93,19 @@ abstract class StorageService {
     fileTypeField: string,
   ) {
     if (!fileData) throw ApiError.NotFound(UserPageExceptions.NoFile);
+
     const isExtAllowed = await StorageService.checkFileExtension(
       fileData.filename,
       fileData.mimetype,
     );
+
     if (!isExtAllowed) {
       StorageService.deleteFile(fileData.filename);
       throw ApiError.BadRequest(UserPageExceptions.ExtensionNotAllowed);
     }
 
     const isSizeAllowed = StorageService.checkFileSize(fileData.filename);
+
     if (!isSizeAllowed) {
       StorageService.deleteFile(fileData.filename);
       throw ApiError.BadRequest(UserPageExceptions.MaxSizeExceeded);
@@ -112,6 +117,7 @@ abstract class StorageService {
     const copyOfFile = await FileModel.findOne({
       where: { userUUID: userUUID, type: fileTypeField },
     });
+
     if (copyOfFile) {
       unlink(storageSettings.destination + '\\' + copyOfFile.fileName);
       await copyOfFile.update({
@@ -133,8 +139,11 @@ abstract class StorageService {
 
   static async deleteFile(fileName: string | null): Promise<void> {
     if (!fileName) throw ApiError.NotFound(UserPageExceptions.ImgNotFound);
+
     unlink(storageSettings.destination + '\\' + fileName);
+
     const file = await FileModel.findOne({ where: { fileName } });
+
     file?.destroy();
   }
 }

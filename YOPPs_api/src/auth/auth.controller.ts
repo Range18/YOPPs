@@ -1,6 +1,6 @@
-import AuthService from '../services/authService';
+import AuthService from './auth.service';
 import { clientServer, jwtSettings } from '../config';
-import { UserDto } from '../entities/UserDto';
+import { UserDto } from '../user/user.dto';
 import { NextFunction, Request, Response } from 'express';
 
 abstract class AuthController {

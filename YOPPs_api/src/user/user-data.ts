@@ -1,7 +1,7 @@
-import { User } from '../Dto/User';
+import { UserPayload } from './user-payload';
 
 export class UserData {
   refreshToken: string;
   accessToken: string;
-  user: User;
+  user: UserPayload;
 }

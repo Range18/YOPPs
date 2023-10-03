@@ -1,13 +1,13 @@
 import { dbContext } from '../dbController/database.controller';
 import { DataTypes, Model } from 'sequelize';
 
-export class Token extends Model {
+export class Sessions extends Model {
   declare userUUID: string;
   declare UUID: string;
   declare expireIn: string;
 }
 
-Token.init(
+Sessions.init(
   {
     userUUID: {
       type: DataTypes.UUID,
@@ -17,13 +17,13 @@ Token.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    expireIn: {
+    expireAt: {
       type: DataTypes.DATE,
       allowNull: false,
     },
   },
   {
-    tableName: 'refreshTokens',
+    tableName: 'sessions',
     createdAt: true,
     updatedAt: false,
     sequelize: dbContext,

@@ -1,14 +1,14 @@
 import { dbContext } from '../dbController/database.controller';
 import { DataTypes, Model } from 'sequelize';
 
-export class PWDResentCodeModel extends Model {
+export class PassResetModel extends Model {
   declare id: number;
   declare userUUID: string;
   declare code: string;
-  declare expiredIn: string;
+  declare expireAt: Date;
 }
 
-PWDResentCodeModel.init(
+PassResetModel.init(
   {
     userUUID: {
       type: DataTypes.UUID,
@@ -18,15 +18,15 @@ PWDResentCodeModel.init(
       type: DataTypes.UUID,
       allowNull: false,
     },
-    expiredIn: {
+    expireAt: {
       type: DataTypes.DATE,
       allowNull: false,
     },
   },
   {
-    sequelize: dbContext,
+    tableName: 'PWDResetCodes',
     createdAt: true,
     updatedAt: false,
-    tableName: 'PWDResentCodes',
+    sequelize: dbContext,
   },
 );

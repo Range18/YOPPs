@@ -1,5 +1,4 @@
 import * as dotenv from 'dotenv';
-import { BOOLEAN } from 'sequelize';
 
 dotenv.config();
 

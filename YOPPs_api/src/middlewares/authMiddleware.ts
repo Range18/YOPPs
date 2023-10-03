@@ -1,10 +1,9 @@
 import { ApiError } from '../Errors/ApiErrors';
-import TokenService from '../services/tokenService';
-import { User } from '../Dto/User';
-import {
-  AuthExceptions,
-  TokenExceptions,
-} from '../Errors/HttpExceptionsMessages';
+import TokenService from '../session/tokenService';
+import { UserPayload } from '../user/user-payload';
+import { TokenExceptions } from '../Errors/HttpExceptionsMessages';
+import { UserModel } from '../user/User-model';
+import { type UserIntercepted } from '../user/user-intercepted';
 import { NextFunction, Request, Response } from 'express';
 
 export async function authMiddleware(
@@ -18,11 +17,21 @@ export async function authMiddleware(
     if (!accessToken)
       return next(ApiError.UnauthorizedError(TokenExceptions.InvalidToken));
 
-    const userData: User | null = TokenService.validateToken(accessToken);
+    const userData: UserPayload | null = TokenService.validate(accessToken);
 
     if (!userData) return next(ApiError.UnauthorizedError());
 
-    req['user'] = userData;
+    const user = await UserModel.findOne({ where: { UUID: userData.UUID } });
+
+    if (!user) return next(ApiError.UnauthorizedError());
+
+    req['user'] = {
+      UUID: user.UUID,
+      username: user.username,
+      email: user.email,
+      isActivated: user.isActivated,
+    } as UserIntercepted;
+
     next();
   } catch (err) {
     return next(ApiError.UnauthorizedError());

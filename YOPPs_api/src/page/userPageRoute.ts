@@ -1,6 +1,6 @@
-import UserPageController from '../controllers/userPageController';
+import UserPageController from './userPageController';
 import { VerifiedMiddleware } from '../middlewares/verifiedMiddleware';
-import storageController from '../controllers/storageController';
+import storageController from '../storage/storage.controller';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { IRouter, Router } from 'express';
 

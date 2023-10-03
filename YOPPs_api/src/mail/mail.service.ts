@@ -1,5 +1,5 @@
+import { MailDto } from './MailDto';
 import { smtpServer } from '../config';
-import { MailDto } from '../Dto/MailDto';
 import { logger } from '../main';
 import nodemailer from 'nodemailer';
 

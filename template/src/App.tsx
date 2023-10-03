@@ -28,7 +28,7 @@ const App: FC = () => {
         ></Route>
         <Route path="/page/:username" element={<UserPage></UserPage>}></Route>
         {/*<Route path='/password/reset' element={<RestorePass/>}></Route>*/}
-        {/*<Route path='/password/change/:token' element={<ChangePassForm/>}></Route>*/}
+        {/*<Route path='/password/change/:session' element={<ChangePassForm/>}></Route>*/}
         <Route path="*" element={<h1>Not Found 404</h1>}></Route>
       </Routes>
     </BrowserRouter>

@@ -1,5 +1,5 @@
-import { UserPageModel } from './UserPage-model';
-import { Token } from './Token-model';
+import { UserPageModel } from '../page/UserPage-model';
+import { Sessions } from '../session/session.model';
 import { dbContext } from '../dbController/database.controller';
 import { DataTypes, Model } from 'sequelize';
 
@@ -73,9 +73,9 @@ UserPageModel.belongsTo(UserModel, {
   foreignKey: 'userUUID',
 });
 
-UserModel.hasOne(Token, {
+UserModel.hasOne(Sessions, {
   foreignKey: 'userUUID',
 });
-Token.belongsTo(UserModel, {
+Sessions.belongsTo(UserModel, {
   foreignKey: 'userUUID',
 });

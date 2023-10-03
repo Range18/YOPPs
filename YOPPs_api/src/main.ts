@@ -1,8 +1,8 @@
 import { apiServer, clientServer, database } from './config';
-import authRoute from './routes/authRoute';
+import authRoute from './auth/auth.route';
 import { errorMiddleware } from './middlewares/errorMiddleware';
-import userRouter from './routes/userPageRoute';
-import StorageService from './services/storageService';
+import userRouter from './page/userPageRoute';
+import StorageService from './storage/storage.service';
 import { Logger } from './logger/logger';
 import {
   DatabaseController,
