@@ -3,14 +3,10 @@ import { UserIntercepted } from '../user/types/user-intercepted';
 import { NextFunction, Request, Response } from 'express';
 
 abstract class UserPageController {
-  static async savePage(
-    req: Request & { user: UserIntercepted },
-    res: Response,
-    next: NextFunction,
-  ) {
+  static async savePage(req: Request, res: Response, next: NextFunction) {
     try {
       const userPageData = req.body;
-      const { UUID } = req.user;
+      const { UUID } = req['user'];
 
       await UserPageService.saveUserPage(UUID, userPageData);
 

@@ -2,11 +2,9 @@ import AuthService from './auth.service';
 import { clientServer, jwtSettings } from '../config';
 import { UserDto } from '../user/dto/user.dto';
 import { NextFunction, Request, Response } from 'express';
+import ms from 'ms';
 
 abstract class AuthController {
-  private static maxAgeRefreshToken =
-    Number(jwtSettings.authExpires.refresh.slice(0, -1)) * 24 * 60 * 60 * 1000;
-
   static async registration(req: Request, res: Response, next: NextFunction) {
     try {
       const { username, email, password } = req.body;
@@ -17,7 +15,7 @@ abstract class AuthController {
       );
 
       res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: AuthController.maxAgeRefreshToken,
+        maxAge: ms(jwtSettings.authExpires.refresh),
         httpOnly: true,
       });
 
@@ -39,7 +37,7 @@ abstract class AuthController {
       const userData = await AuthService.login(email, password);
 
       res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: AuthController.maxAgeRefreshToken,
+        maxAge: ms(jwtSettings.authExpires.refresh),
         httpOnly: true,
       });
 
@@ -70,16 +68,20 @@ abstract class AuthController {
   static async refresh(req: Request, res: Response, next: NextFunction) {
     try {
       const { refreshToken } = req.cookies;
+
       const userData = await AuthService.refresh(refreshToken);
       await AuthService.logout(refreshToken);
+
       res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: AuthController.maxAgeRefreshToken,
+        maxAge: ms(jwtSettings.authExpires.refresh),
         httpOnly: true,
       });
+
       const userDataPreview: UserDto = {
         accessToken: userData.accessToken,
         user: userData.user,
       };
+
       res.json(userDataPreview);
       next();
     } catch (err) {

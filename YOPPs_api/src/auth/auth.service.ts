@@ -1,5 +1,5 @@
 import MailService from '../mail/mail.service';
-import TokenService from '../session/tokenService';
+import TokenService from '../session/token.service';
 import { UserModel } from '../user/User-model';
 import { ApiError } from '../Errors/ApiErrors';
 import { apiServer, bcryptSalt, PWDCodeExpireIn } from '../config';
@@ -17,6 +17,7 @@ import { MailDto } from '../mail/MailDto';
 import { SessionService } from '../session/session.service';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
+import { UserIntercepted } from '#src/user/types/user-intercepted';
 
 abstract class AuthService {
   static async registration(
@@ -174,7 +175,7 @@ abstract class AuthService {
     await user.save();
   }
 
-  static async resendActivateEmail(email: string, userData: UserPayload) {
+  static async resendActivateEmail(email: string, userData: UserIntercepted) {
     await ActivationLinksModel.destroy({ where: { userUUID: userData.UUID } });
 
     const linkModel = await ActivationLinksModel.create({

@@ -2,12 +2,13 @@ import StorageService from './storage.service';
 import { storageSettings } from '../config';
 import { UserPayload } from '../user/types/user-payload';
 import { NextFunction, Request, Response } from 'express';
+import { UserIntercepted } from '#src/user/types/user-intercepted';
 
 abstract class StorageController {
   static async uploadFile(req: Request, res: Response, next: NextFunction) {
     try {
       const file = req.file;
-      const user: UserPayload = req['user'];
+      const user: UserIntercepted = req['user'];
       await StorageService.uploadFile(file, user.UUID, 'avatar');
       res.status(201).json({ message: 'OK' });
       next();

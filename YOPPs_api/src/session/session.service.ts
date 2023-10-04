@@ -1,8 +1,9 @@
 import { Sessions } from './session.model';
-import TokenService from './tokenService';
+import TokenService from './token.service';
 import { jwtSettings } from '../config';
 import { logger } from '../main';
 import { UserPayload } from '../user/types/user-payload';
+import ms from 'ms';
 
 export abstract class SessionService {
   static async create(
@@ -10,16 +11,10 @@ export abstract class SessionService {
     refreshUUID: string,
   ): Promise<Sessions | null> {
     try {
-      const maxAgeRefreshToken =
-        Number(jwtSettings.authExpires.refresh.slice(0, -1)) *
-        24 *
-        60 *
-        60 *
-        1000;
       return await Sessions.create({
         userUUID: UUID,
         UUID: refreshUUID,
-        expireAt: Date.now() + maxAgeRefreshToken,
+        expireAt: Date.now() + ms(jwtSettings.authExpires.refresh),
       });
     } catch (err) {
       logger.error(err);

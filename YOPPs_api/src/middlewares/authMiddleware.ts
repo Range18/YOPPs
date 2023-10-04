@@ -1,5 +1,5 @@
 import { ApiError } from '../Errors/ApiErrors';
-import TokenService from '../session/tokenService';
+import TokenService from '../session/token.service';
 import { UserPayload } from '../user/types/user-payload';
 import { TokenExceptions } from '../Errors/HttpExceptionsMessages';
 import { UserModel } from '../user/User-model';

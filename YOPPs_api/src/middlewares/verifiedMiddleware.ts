@@ -5,12 +5,12 @@ import { UserPayload } from '../user/types/user-payload';
 import { NextFunction, Request, Response } from 'express';
 
 export async function VerifiedMiddleware(
-  req: Request & { user: UserIntercepted },
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    const userData: UserIntercepted = req.user;
+    const userData: UserIntercepted = req['user'];
 
     if (!userData.isActivated)
       return next(new ApiError(403, AuthExceptions.NotActivated));

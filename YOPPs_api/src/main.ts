@@ -47,9 +47,7 @@ const bootstrap = async () => {
     await dataSource.sync({ force: database.dropDB });
 
     app.listen(apiServer.port, () =>
-      logger.info(
-        `Server is started at http://${apiServer.host}:${apiServer.port}`,
-      ),
+      logger.info(`Server is started at ${apiServer.url}`),
     );
   } catch (err) {
     console.log(err);
